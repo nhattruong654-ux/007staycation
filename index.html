@@ -44,6 +44,10 @@
     <video class="hero__video" muted playsinline webkit-playsinline preload="auto" poster="assets/images/hero/hero-1.jpg">
       <source src="assets/Video/hero-bg-mascot.mp4" type="video/mp4">
     </video>
+    <!-- Static fallback shown on phones instead of the scroll-scrubbed
+         video — real iPhones weren't reliably loading/decoding the video
+         despite it working fine on desktop, so mobile gets this instead. -->
+    <img class="hero__video-fallback" src="assets/images/mascot/mascot-duo.jpg" alt="007 Staycation — hai điệp viên">
     <div class="hero__scrim"></div>
   </div>
 

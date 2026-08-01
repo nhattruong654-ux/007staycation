@@ -176,6 +176,12 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
    Chrome, and a height:auto video sits at 0 height (poster included) until
    that metadata arrives, which read as "video missing" on real iPhones. */
 .hero__video{ position:relative; width:66%; max-width:420px; aspect-ratio:1/1; object-fit:contain; }
+/* Static mobile fallback — hidden on desktop/tablet where the video is
+   confirmed working; swapped in below 720px. */
+.hero__video-fallback{
+  position:relative; width:66%; max-width:420px; aspect-ratio:1000/737;
+  object-fit:cover; border-radius:var(--radius); display:none;
+}
 .hero__content{ position:relative; z-index:2; max-width:900px; }
 .hero__title{ font-size:var(--fs-hero); line-height:1.22; }
 .hero__title span span{ display:inline-block; }
@@ -524,6 +530,10 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
 }
 
 @media (max-width: 720px){
+  .hero__video{ display:none; }
+  /* Nudged down out of dead-center so it sits in the gap between the
+     title and the button instead of overlapping the title text. */
+  .hero__video-fallback{ display:block; transform:translateY(45px); }
   .nav__links{
     position:fixed; top:0; right:0; height:100vh; width:min(78vw,320px);
     background:var(--bg-elevated); flex-direction:column; align-items:flex-start;
