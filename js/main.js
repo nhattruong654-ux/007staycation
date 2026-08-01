@@ -151,8 +151,8 @@
   // 2-tier split as always. Overnight is the exception: it only steps up on
   // Saturday nights — Mon–Fri and Sun all share the same "normal" rate.
   // Both branches split rooms into two tiers by size.
-  var PRICE_TABLE_A = { combo:[250000,280000], overnight:{normal:400000, saturday:450000}, fullday:[650000,800000] };
-  var PRICE_TABLE_B = { combo:[200000,230000], overnight:{normal:350000, saturday:400000}, fullday:[600000,750000] };
+  var PRICE_TABLE_A = { combo:[250000,280000], overnight:{normal:400000, saturday:450000}, fullday:[650000,750000] };
+  var PRICE_TABLE_B = { combo:[200000,230000], overnight:{normal:350000, saturday:400000}, fullday:[600000,700000] };
   var CN1_ROOM_PRICE = {
     'Mission 001': PRICE_TABLE_A, 'Mission 002': PRICE_TABLE_B, 'Mission 003': PRICE_TABLE_A,
     'Mission 004': PRICE_TABLE_B, 'Mission 005': PRICE_TABLE_A, 'Mission 006': PRICE_TABLE_A
