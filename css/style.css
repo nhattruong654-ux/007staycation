@@ -153,13 +153,21 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
    releases back to normal scroll once branch-select has fully passed.
    ============================================================ */
 .hero-pin{ position:relative; }
+/* 100vh on iOS Safari is measured against the viewport with the address
+   bar collapsed, not what's actually visible — since .hero's negative
+   margin has to exactly cancel .hero-pin__bg's height for the sticky
+   video to line up with the content sitting on top of it, any mismatch
+   between the two (which is exactly what happens as Safari's chrome
+   resizes during scroll) shifts the video out of view entirely. 100dvh
+   tracks the real visible viewport and fixes the misalignment; the plain
+   vh line stays first as a fallback for browsers without dvh support. */
 .hero-pin__bg{
-  position:sticky; top:0; height:100vh; z-index:0; overflow:hidden;
+  position:sticky; top:0; height:100vh; height:100dvh; z-index:0; overflow:hidden;
   background:var(--bg); display:flex; align-items:center; justify-content:center;
 }
 .hero{
-  position:relative; z-index:1; margin-top:-100vh;
-  min-height:100vh; display:flex; flex-direction:column;
+  position:relative; z-index:1; margin-top:-100vh; margin-top:-100dvh;
+  min-height:100vh; min-height:100dvh; display:flex; flex-direction:column;
   align-items:center; justify-content:center; text-align:center;
   overflow:hidden; padding:var(--space-4);
 }
