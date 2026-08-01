@@ -42,6 +42,19 @@
     };
     window.addEventListener('scroll', scrubHeroVideo, { passive:true });
     heroVideo.addEventListener('loadedmetadata', scrubHeroVideo);
+    // iOS Safari often never fully decodes a video that's only ever seeked
+    // via currentTime and never actually played — priming it with an
+    // immediate play()+pause() (muted, so autoplay policy allows it) forces
+    // that decode to happen so subsequent scroll-driven seeking works.
+    heroVideo.muted = true;
+    var primeHeroVideo = function(){
+      var playPromise = heroVideo.play();
+      if (playPromise && playPromise.then) {
+        playPromise.then(function(){ heroVideo.pause(); }).catch(function(){});
+      }
+    };
+    if (heroVideo.readyState >= 2) primeHeroVideo();
+    else heroVideo.addEventListener('loadeddata', primeHeroVideo, { once:true });
   }
 
   /* ---------- Branch card room-photo crossfade ---------- */
