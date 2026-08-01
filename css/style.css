@@ -146,46 +146,24 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
 .hud-corner--br{ bottom:0; right:0; border-bottom:1.5px solid; border-right:1.5px solid; }
 
 /* ============================================================
-   Hero + branch-select — share one pinned video background. The bg layer
-   sticks for the combined natural height of both stages (hero overlaps it
-   via negative margin, branch-select follows normally); JS maps scroll
-   progress across that whole range to the video's currentTime, so it only
-   releases back to normal scroll once branch-select has fully passed.
+   Hero — static mascot art, no video/sticky pinning. (An earlier version
+   used a scroll-scrubbed pinned video here, but it couldn't be made to
+   load reliably on real iPhones despite working fine on desktop, so the
+   whole section was simplified to plain static images.)
    ============================================================ */
-.hero-pin{ position:relative; }
-/* 100vh on iOS Safari is measured against the viewport with the address
-   bar collapsed, not what's actually visible — since .hero's negative
-   margin has to exactly cancel .hero-pin__bg's height for the sticky
-   video to line up with the content sitting on top of it, any mismatch
-   between the two (which is exactly what happens as Safari's chrome
-   resizes during scroll) shifts the video out of view entirely. 100dvh
-   tracks the real visible viewport and fixes the misalignment; the plain
-   vh line stays first as a fallback for browsers without dvh support. */
-.hero-pin__bg{
-  position:sticky; top:0; height:100vh; height:100dvh; z-index:0; overflow:hidden;
-  background:var(--bg); display:flex; align-items:center; justify-content:center;
-}
 .hero{
-  position:relative; z-index:1; margin-top:-100vh; margin-top:-100dvh;
-  min-height:100vh; min-height:100dvh; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; text-align:center;
-  overflow:hidden; padding:var(--space-4);
+  position:relative; min-height:100vh; min-height:100dvh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; overflow:hidden; padding:var(--space-4);
 }
-/* aspect-ratio (not height:auto) so the box has real size immediately —
-   iOS Safari loads video metadata far more conservatively than desktop
-   Chrome, and a height:auto video sits at 0 height (poster included) until
-   that metadata arrives, which read as "video missing" on real iPhones. */
-.hero__video{ position:relative; width:66%; max-width:420px; aspect-ratio:1/1; object-fit:contain; }
-/* Static mobile fallback — hidden on desktop/tablet where the video is
-   confirmed working; swapped in below 720px. */
-.hero__video-fallback{
-  position:relative; width:66%; max-width:420px; aspect-ratio:1000/737;
-  object-fit:cover; border-radius:var(--radius); display:none;
-}
-.hero__content{ position:relative; z-index:2; max-width:900px; }
+.hero__content{ position:relative; z-index:2; max-width:900px; display:flex; flex-direction:column; align-items:center; }
 .hero__title{ font-size:var(--fs-hero); line-height:1.22; }
 .hero__title span span{ display:inline-block; }
-.hero__actions{ display:flex; justify-content:center; margin-top:220px; }
+.hero__mascot{
+  width:66%; max-width:300px; aspect-ratio:1/1; object-fit:contain;
+  margin:var(--space-4) 0;
+}
+.hero__actions{ display:flex; justify-content:center; }
 .hero__actions > span{ display:flex; gap:var(--space-2); flex-wrap:wrap; justify-content:center; }
 
 /* reveal-line: text mask reveal used for hero */
@@ -236,6 +214,10 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
   display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
   gap:var(--space-3); margin-top:var(--space-4);
 }
+/* Sits between the two cards once they stack on mobile; on desktop the
+   cards run side by side with no natural gap to put it in, so it's hidden
+   there — see the max-width:720px override below. */
+.branch-select__mascot{ display:none; }
 .branch-card{
   background:var(--bg-elevated-2); border:1px solid var(--line); border-radius:var(--radius);
   overflow:hidden; text-align:left; cursor:pointer; padding:0;
@@ -530,10 +512,6 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
 }
 
 @media (max-width: 720px){
-  .hero__video{ display:none; }
-  /* Nudged down out of dead-center so it sits in the gap between the
-     title and the button instead of overlapping the title text. */
-  .hero__video-fallback{ display:block; transform:translateY(45px); }
   .nav__links{
     position:fixed; top:0; right:0; height:100vh; width:min(78vw,320px);
     background:var(--bg-elevated); flex-direction:column; align-items:flex-start;
@@ -556,13 +534,12 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
   .location-intro__inner{ padding-top:4px; padding-bottom:0; }
   .hud-corners{ inset:var(--space-2); }
   .hud-corner{ width:18px; height:18px; }
-  /* Stacked branch cards get a tall gap so the shared video background
-     (mascots pointing at each branch) reads clearly between them. The
-     extra margin-bottom nudges the whole (centered) block upward so that
-     gap lines up with the mascots' pose at the end of the pinned scroll. */
-  #branchSelect{ margin-bottom:47px; }
-  .branch-cards{ gap:320px; justify-items:center; }
+  .branch-cards{ gap:var(--space-4); justify-items:center; }
   .branch-card{ max-width:300px; width:100%; min-height:110px; }
+  .branch-select__mascot{
+    display:block; width:100%; max-width:260px; aspect-ratio:1024/1536;
+    object-fit:contain;
+  }
   .branch-card__body{ padding:12px; gap:4px; }
   .branch-card__name{ font-size:1rem; }
   .branch-card__addr{ font-size:0.68rem; }
