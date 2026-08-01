@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>007 Staycation — Bà Rịa | Mỗi cánh cửa, một điệp vụ nghỉ dưỡng</title>
+<meta name="description" content="007 Staycation tại Bà Rịa — 2 chi nhánh, các phòng Mission 001-006, 007 DNA, 007 SOUL. Đặt phòng qua Zalo hoặc Facebook.">
+<link rel="icon" href="assets/images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="grain"></div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#top" class="nav__brand">
+      <img src="assets/images/logo-nav.png" alt="007 Staycation" class="nav__logo">
+    </a>
+    <nav class="nav__links" id="navLinks">
+      <button class="nav__links-close" id="navLinksClose" aria-label="Đóng menu">✕</button>
+      <a href="#missions">Chi nhánh</a>
+      <a href="#location">Vị trí</a>
+      <a href="#reviews">Đánh giá</a>
+      <a href="#lien-he">Liên hệ</a>
+    </nav>
+    <button class="nav__toggle" id="navToggle" aria-label="Mở menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div id="homeView">
+
+<!-- HERO + BRANCH-SELECT — share one pinned video background. The video
+     scrubs with scroll position across both stages and only releases back
+     to normal scrolling once the branch-select step has fully passed. -->
+<div class="hero-pin" id="heroPin">
+  <div class="hero-pin__bg">
+    <video class="hero__video" muted playsinline preload="auto" poster="assets/images/hero/hero-1.jpg">
+      <source src="assets/Video/hero-bg-mascot.mp4" type="video/mp4">
+    </video>
+    <div class="hero__scrim"></div>
+  </div>
+
+<section class="hero" id="top">
+  <div class="hud-corners" aria-hidden="true">
+    <span class="hud-corner hud-corner--tl"></span>
+    <span class="hud-corner hud-corner--tr"></span>
+    <span class="hud-corner hud-corner--bl"></span>
+    <span class="hud-corner hud-corner--br"></span>
+  </div>
+
+  <div class="hero__content">
+    <p class="tag reveal-line">007 STAYCATION — BÀ RỊA</p>
+    <h1 class="hero__title">
+      <span class="reveal-line"><span>NƠI TRỞ VỀ</span></span>
+      <span class="reveal-line"><span>BẢN NGÃ</span></span>
+    </h1>
+    <div class="hero__actions reveal-line">
+      <span>
+        <a href="#missions" class="btn btn--primary">Xem các chi nhánh 007</a>
+      </span>
+    </div>
+  </div>
+
+  <a href="#missions" class="hero__scroll" aria-label="Cuộn xuống">
+    <span class="hero__scroll-label">CUỘN XUỐNG</span>
+    <span class="hero__scroll-line"></span>
+  </a>
+</section>
+
+<!-- MISSIONS / ROOMS -->
+<section class="missions" id="missions">
+  <div class="section-inner">
+
+    <!-- STEP 1 — pick a branch -->
+    <div class="branch-select" id="branchSelect">
+      <p class="tag reveal-up">// BƯỚC 1 — CHỌN CHI NHÁNH</p>
+      <h2 class="reveal-up">Bạn muốn nhận phòng ở đâu?</h2>
+      <div class="branch-cards">
+        <button class="branch-card reveal-up" data-branch="cn1">
+          <span class="branch-card__media">
+            <img class="branch-card__slide is-active" src="assets/images/rooms/cn1/mission-001-1.jpg" alt="007 Staycation — Mission 001" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn1/mission-002-1.jpg" alt="007 Staycation — Mission 002" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn1/mission-003-1.jpg" alt="007 Staycation — Mission 003" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn1/mission-004-1.jpg" alt="007 Staycation — Mission 004" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn1/mission-005-1.jpg" alt="007 Staycation — Mission 005" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn1/mission-006-1.jpg" alt="007 Staycation — Mission 006" loading="lazy">
+            <span class="branch-card__badge mono">CHI NHÁNH 01</span>
+          </span>
+          <span class="branch-card__body">
+            <span class="branch-card__name">007 Staycation</span>
+            <span class="branch-card__addr mono">40 Trần Quốc Toản, P. Long Hương</span>
+            <span class="branch-card__cta">Xem 6 Mission →</span>
+          </span>
+        </button>
+        <button class="branch-card reveal-up" data-branch="cn2">
+          <span class="branch-card__media">
+            <img class="branch-card__slide is-active" src="assets/images/rooms/cn2/mission-001-1.jpg" alt="007 The Concept — Mission 001" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn2/mission-002-1.jpg" alt="007 The Concept — Mission 002" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn2/mission-003-1.jpg" alt="007 The Concept — Mission 003" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn2/mission-004-1.jpg" alt="007 The Concept — Mission 004" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn2/mission-005-1.jpg" alt="007 The Concept — Mission 005" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn2/mission-006-1.jpg" alt="007 The Concept — Mission 006" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn2/007-dna-1.jpg" alt="007 The Concept — 007 DNA" loading="lazy">
+            <img class="branch-card__slide" src="assets/images/rooms/cn2/007-soul-1.jpg" alt="007 The Concept — 007 SOUL" loading="lazy">
+            <span class="branch-card__badge mono">CHI NHÁNH 02</span>
+          </span>
+          <span class="branch-card__body">
+            <span class="branch-card__name">007 The Concept</span>
+            <span class="branch-card__addr mono">51 Nguyễn Thị Minh Khai, P. Bà Rịa</span>
+            <span class="branch-card__cta">Xem 8 Mission →</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Location heading rides the same pinned video a little further, so it
+     only lets go partway into the Vị trí section instead of right at its
+     top edge. -->
+<section class="location-intro" id="location">
+  <div class="section-inner location-intro__inner">
+    <p class="tag reveal-up">// VỊ TRÍ</p>
+  </div>
+</section>
+</div><!-- /heroPin -->
+
+<!-- LOCATION -->
+<section class="location">
+  <div class="section-inner">
+    <h2 class="reveal-up">Vị trí hai chi nhánh 007</h2>
+    <div class="location-grid">
+      <div class="location-card reveal-up">
+        <p class="mono">CHI NHÁNH 01</p>
+        <h3>007 Staycation</h3>
+        <p class="location-card__addr">40 Trần Quốc Toản, Phường Long Hương</p>
+        <div class="location-card__map">
+          <iframe loading="lazy" src="https://www.google.com/maps?q=40+Tr%E1%BA%A7n+Qu%E1%BB%91c+To%E1%BA%A3n%2C+Ph%C6%B0%E1%BB%9Dng+Long+H%C6%B0%C6%A1ng%2C+B%C3%A0+R%E1%BB%8Ba&output=embed" width="100%" height="100%" style="border:0" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <a class="btn btn--ghost" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=40+Tr%E1%BA%A7n+Qu%E1%BB%91c+To%E1%BA%A3n%2C+Ph%C6%B0%E1%BB%9Dng+Long+H%C6%B0%C6%A1ng%2C+B%C3%A0+R%E1%BB%8Ba">Chỉ đường</a>
+      </div>
+      <div class="location-card reveal-up">
+        <p class="mono">CHI NHÁNH 02</p>
+        <h3>007 The Concept</h3>
+        <p class="location-card__addr">51 Nguyễn Thị Minh Khai, Phường Bà Rịa</p>
+        <div class="location-card__map">
+          <iframe loading="lazy" src="https://www.google.com/maps?q=51+Nguy%E1%BB%85n+Th%E1%BB%8B+Minh+Khai%2C+Ph%C6%B0%E1%BB%9Dng+B%C3%A0+R%E1%BB%8Ba&output=embed" width="100%" height="100%" style="border:0" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <a class="btn btn--ghost" target="_blank" rel="noopener" href="https://www.google.com/maps/place/007+THE+CONCEPT/@10.4949087,107.1770047,21z/data=!4m6!3m5!1s0x3175730e86748ba3:0x7bed665c73b1c5c8!8m2!3d10.4949997!4d107.1770003!16s%2Fg%2F11zgdgc2ll?entry=ttu&g_ep=EgoyMDI2MDcxOS4wIKXMDSoASAFQAw%3D%3D">Chỉ đường</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews" id="reviews">
+  <div class="section-inner reviews__inner">
+    <p class="tag reveal-up">// ĐÁNH GIÁ</p>
+    <h2 class="reveal-up">Khách đã nói gì về 007?</h2>
+    <div class="reviews__stars reveal-up" aria-hidden="true">★★★★★</div>
+    <p class="reveal-up">Mỗi đánh giá đều được 007 Staycation trân trọng đọc và phản hồi. Xem toàn bộ nhận xét thật từ khách hàng trên Google Maps.</p>
+    <div class="reviews__actions reveal-up">
+      <a class="btn btn--primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=007+Staycation+B%C3%A0+R%E1%BB%8Ba+Tr%E1%BA%A7n+Qu%E1%BB%91c+To%E1%BA%A3n">Đánh giá — 007 STAYCATION</a>
+      <a class="btn btn--primary" target="_blank" rel="noopener" href="https://www.google.com/maps/place/007+THE+CONCEPT/@10.4949087,107.1770047,21z/data=!4m6!3m5!1s0x3175730e86748ba3:0x7bed665c73b1c5c8!8m2!3d10.4949997!4d107.1770003!16s%2Fg%2F11zgdgc2ll?entry=ttu&g_ep=EgoyMDI2MDcxOS4wIKXMDSoASAFQAw%3D%3D">Đánh giá — 007 THE CONCEPT</a>
+    </div>
+  </div>
+</section>
+
+<!-- LƯU Ý & NỘI QUY — same swipeable carousel as on each branch's rooms
+     page, also surfaced here so visitors can check policies before ever
+     picking a branch. -->
+<section class="rules section-inner" id="lien-quy-dinh">
+  <p class="tag reveal-up">// LƯU Ý &amp; NỘI QUY</p>
+  <div class="rules-carousel">
+    <div class="rules-carousel__track">
+
+      <div class="rules-carousel__slide">
+        <h3 class="rules-carousel__title">Lưu ý</h3>
+        <ul class="rules-list rules-list--icons">
+          <li><span class="rules-icon">🔑</span><span>Home không có lễ tân, <strong>Check in</strong> và <strong>Check out</strong> tự động</span></li>
+          <li><span class="rules-icon">16+</span><span>Home xin phép <strong>không nhận</strong> khách <strong>dưới 16 tuổi</strong></span></li>
+          <li><span class="rules-icon">🏠</span><span>Mỗi phòng được thiết kế cho tối đa <strong>2 khách</strong>
+            <ul class="rules-sublist">
+              <li>Nếu có khách <strong>thứ 3 trở đi</strong>, vui lòng <strong>báo trước</strong>. Phụ thu: <strong>70.000đ/người</strong></li>
+              <li>Nếu khách cố tình đưa <strong>thêm người</strong> mà <strong>không báo trước</strong>, Home sẽ <strong>từ chối phục vụ</strong> (không hoàn tiền)</li>
+            </ul>
+          </span></li>
+          <li><span class="rules-icon">✓</span><span>Khách chỉ được nhận phòng khi đã có <strong>xác nhận booking</strong> từ Home.</span></li>
+        </ul>
+      </div>
+
+      <div class="rules-carousel__slide">
+        <h3 class="rules-carousel__title">Nội quy</h3>
+        <ol class="rules-list rules-list--numbered">
+          <li><strong>CHECK IN - CHECK OUT</strong>
+            <ul class="rules-sublist">
+              <li><strong>Vui lòng</strong> cung cấp ảnh CCCD của 2 khách để làm thủ tục check-in</li>
+              <li><strong>Check out đúng giờ</strong> — để tránh ảnh hưởng đến khách sau</li>
+              <li>Check-out trễ (từ 10 phút trở lên): <strong>Phụ thu</strong> theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+              <li>Khi check-out, <strong>vui lòng</strong> quay video tình trạng phòng để xác nhận, giúp tránh phát sinh không đáng có</li>
+              <li>Trường hợp phát sinh vệ sinh đặc biệt sau check-out sẽ áp dụng theo mức xử lý theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+            </ul>
+          </li>
+          <li><strong>KHÔNG vi phạm pháp luật</strong>
+            <ul class="rules-sublist">
+              <li><strong>KHÔNG</strong> sử dụng, tàng trữ chất kích thích, mại dâm, cờ bạc hoặc bất kỳ hành vi vi phạm pháp luật nào tại 007 Staycation.</li>
+            </ul>
+          </li>
+          <li><strong>KHÔNG hút thuốc, sử dụng chất gây cháy nổ trong phòng</strong>
+            <ul class="rules-sublist">
+              <li>Nếu hút thuốc trong phòng: <strong>Phạt</strong> theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <div class="rules-carousel__slide">
+        <h3 class="rules-carousel__title">Nội quy (tiếp theo)</h3>
+        <ol class="rules-list rules-list--numbered" start="4">
+          <li><strong>NGHIÊM CẤM</strong> sử dụng vape, thuốc lá điện tử trong toàn bộ khu vực tại 007 Staycation
+            <ul class="rules-sublist">
+              <li>Nếu phát hiện, Home có quyền ngưng phục vụ và phối hợp cơ quan chức năng xử lý khi cần thiết</li>
+            </ul>
+          </li>
+          <li><strong>Nấu ăn &amp; vệ sinh</strong>
+            <ul class="rules-sublist">
+              <li><strong>KHÔNG</strong> nấu ăn trong phòng (trừ phòng có bếp)</li>
+              <li>Nếu sử dụng bếp, vui lòng giữ gìn vệ sinh, rửa sạch dụng cụ bếp và dọn dẹp sau khi sử dụng.</li>
+            </ul>
+          </li>
+          <li><strong>Giữ gìn không gian chung</strong>
+            <ul class="rules-sublist">
+              <li><strong>KHÔNG</strong> mang đồ ăn nặng mùi, dầu mỡ lên giường, chăn, gối, thảm, rèm</li>
+              <li><strong>Vui lòng</strong> bỏ rác đúng nơi quy định, không xả rác trong phòng, ban công và khu vực chung.</li>
+              <li>Nếu phát sinh mùi hoặc vết bẩn khó xử lý: Phụ thu theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+            </ul>
+          </li>
+          <li><strong>Nội thất &amp; tài sản</strong>
+            <ul class="rules-sublist">
+              <li><strong>KHÔNG</strong> tự ý di chuyển, thay đổi kết cấu, đóng đinh, dán keo hoặc treo đồ lên tường</li>
+              <li>Nếu hư hỏng hoặc mất tài sản: <strong>bồi thường</strong> theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <div class="rules-carousel__slide">
+        <h3 class="rules-carousel__title">Bảng phụ thu &amp; xử lý phát sinh</h3>
+        <ol class="rules-list rules-list--numbered">
+          <li><strong>CHECK-IN / CHECK-OUT</strong>
+            <ul class="rules-sublist">
+              <li>Check-out trễ (từ 10 phút trở lên): Phụ thu <strong>100.000đ</strong></li>
+            </ul>
+          </li>
+          <li><strong>VỆ SINH &amp; KHỬ MÙI</strong>
+            <ul class="rules-sublist">
+              <li>Ga giường/ chăn/ gối dính máu hoặc vết bẩn khó tẩy: <strong>200.000đ/món</strong></li>
+              <li>Nệm dính máu hoặc vết bẩn khó tẩy: <strong>300.000đ/lần vệ sinh</strong></li>
+              <li>Khăn dính máu hoặc vết bẩn khó tẩy: <strong>100.000đ/món</strong></li>
+              <li>Hút thuốc trong phòng: <strong>300.000đ/lần</strong></li>
+              <li>Phát sinh mùi nặng trong phòng (đồ ăn, dầu mỡ, chất gây mùi,...): Phụ thu theo mức độ xử lý thực tế</li>
+            </ul>
+          </li>
+          <li><strong>THIẾT BỊ &amp; NỘI THẤT</strong>
+            <ul class="rules-sublist">
+              <li>Làm bể hoặc hư hỏng thiết bị điện tử / nội thất / đồ gia dụng: Tính theo chi phí sửa chữa hoặc thay mới thực tế</li>
+              <li>Làm mất tài sản, vật dụng trong phòng: Bồi thường theo giá trị thực tế</li>
+              <li>Tự ý thay đổi bố cục, dán keo, đóng đinh hoặc tác động lên tường / nội thất: Phụ thu theo tình trạng khắc phục thực tế</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+    </div>
+    <button class="rules-carousel__arrow rules-carousel__arrow--prev" aria-label="Trang trước">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="rules-carousel__arrow rules-carousel__arrow--next" aria-label="Trang sau">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="rules-carousel__dots">
+      <span class="rules-carousel__dot is-active"></span>
+      <span class="rules-carousel__dot"></span>
+      <span class="rules-carousel__dot"></span>
+      <span class="rules-carousel__dot"></span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="section-inner footer__grid">
+    <div>
+      <img src="assets/images/logo.png" alt="007 Staycation" class="footer__logo">
+      <p>Mỗi cánh cửa, một điệp vụ nghỉ dưỡng.</p>
+    </div>
+    <div>
+      <p class="mono footer__heading">CHI NHÁNH</p>
+      <p>40 Trần Quốc Toản, P. Long Hương</p>
+      <p>51 Nguyễn Thị Minh Khai, P. Bà Rịa</p>
+    </div>
+    <div id="lien-he">
+      <p class="mono footer__heading">LIÊN HỆ</p>
+      <p><a href="https://zalo.me/4382808736570152572" target="_blank" rel="noopener">Zalo: zalo.me/4382808736570152572</a></p>
+      <p><a href="tel:089772567">Hotline: 089 772 567</a></p>
+      <p><a href="https://www.facebook.com/007staycation" target="_blank" rel="noopener">Facebook: facebook.com/007staycation</a></p>
+    </div>
+  </div>
+  <div class="section-inner footer__bottom">
+    <p>© 2026 007 Staycation. Bảo lưu mọi quyền.</p>
+  </div>
+</footer>
+
+</div><!-- /homeView -->
+
+<!-- ROOMS PAGE — shown full-screen after a branch is picked, replacing the homepage entirely -->
+<section class="rooms-page" id="roomsView" hidden>
+  <div class="section-inner">
+    <button class="back-link mono" id="backToBranches">← Về trang chủ</button>
+    <p class="tag" id="roomSelectBranchTag">// CHI NHÁNH 01</p>
+    <h2 id="roomsPageTitle">007 Staycation</h2>
+    <p class="branch-address mono" id="branchAddress">40 Trần Quốc Toản, Phường Long Hương</p>
+
+    <!-- AVAILABILITY SEARCH — pick a date/time, see which Missions are free -->
+    <div class="availability">
+      <div class="availability__tabs" role="tablist">
+        <button class="availability__tab is-active" data-mode="hour" role="tab" aria-selected="true">Theo giờ</button>
+        <button class="availability__tab" data-mode="overnight" role="tab" aria-selected="false">Qua đêm</button>
+        <button class="availability__tab" data-mode="day" role="tab" aria-selected="false">Theo ngày</button>
+      </div>
+
+      <div class="availability__form">
+        <div class="availability__field availability__field--wide">
+          <label>Nhận phòng</label>
+          <div class="availability__date-group">
+            <select id="availDay" aria-label="Ngày"></select>
+            <select id="availMonth" aria-label="Tháng"></select>
+            <select id="availYear" aria-label="Năm"></select>
+          </div>
+        </div>
+        <div class="availability__field availability__field--wide" id="availFieldOut" hidden>
+          <label>Trả phòng</label>
+          <div class="availability__date-group">
+            <select id="availOutDay" aria-label="Ngày"></select>
+            <select id="availOutMonth" aria-label="Tháng"></select>
+            <select id="availOutYear" aria-label="Năm"></select>
+          </div>
+        </div>
+        <div class="availability__field" id="availFieldB">
+          <label for="availTime" id="availFieldBLabel">Giờ vào</label>
+          <select id="availTime"><!-- populated by JS: 00:00–23:30, mỗi 30 phút --></select>
+        </div>
+        <div class="availability__field" id="availFieldC">
+          <label for="availDuration" id="availFieldCLabel">Số giờ nghỉ</label>
+          <select id="availDuration"><!-- populated by JS: 3–12 giờ --></select>
+          <select id="availTimeOut" hidden><!-- populated by JS: từ 09:00, mỗi 30 phút --></select>
+        </div>
+        <button class="btn btn--primary availability__submit" id="availSearchBtn">Tìm phòng trống</button>
+      </div>
+
+      <div class="availability__status mono" id="availStatus"></div>
+      <p class="availability__note">* Đối với việc đặt phòng thời gian dài, vui lòng liên hệ trực tiếp để được ưu đãi giá.</p>
+    </div>
+
+    <div class="room-grid" id="roomGrid">
+      <!-- populated by JS -->
+    </div>
+
+    <!-- LƯU Ý & NỘI QUY — swipeable carousel: Lưu ý / Nội quy (1) / Nội quy (2) / Bảng phụ thu -->
+    <section class="rules">
+      <p class="tag">// LƯU Ý &amp; NỘI QUY</p>
+      <div class="rules-carousel">
+        <div class="rules-carousel__track">
+
+          <div class="rules-carousel__slide">
+            <h3 class="rules-carousel__title">Lưu ý</h3>
+            <ul class="rules-list rules-list--icons">
+              <li><span class="rules-icon">🔑</span><span>Home không có lễ tân, <strong>Check in</strong> và <strong>Check out</strong> tự động</span></li>
+              <li><span class="rules-icon">16+</span><span>Home xin phép <strong>không nhận</strong> khách <strong>dưới 16 tuổi</strong></span></li>
+              <li><span class="rules-icon">🏠</span><span>Mỗi phòng được thiết kế cho tối đa <strong>2 khách</strong>
+                <ul class="rules-sublist">
+                  <li>Nếu có khách <strong>thứ 3 trở đi</strong>, vui lòng <strong>báo trước</strong>. Phụ thu: <strong>70.000đ/người</strong></li>
+                  <li>Nếu khách cố tình đưa <strong>thêm người</strong> mà <strong>không báo trước</strong>, Home sẽ <strong>từ chối phục vụ</strong> (không hoàn tiền)</li>
+                </ul>
+              </span></li>
+              <li><span class="rules-icon">✓</span><span>Khách chỉ được nhận phòng khi đã có <strong>xác nhận booking</strong> từ Home.</span></li>
+            </ul>
+          </div>
+
+          <div class="rules-carousel__slide">
+            <h3 class="rules-carousel__title">Nội quy</h3>
+            <ol class="rules-list rules-list--numbered">
+              <li><strong>CHECK IN - CHECK OUT</strong>
+                <ul class="rules-sublist">
+                  <li><strong>Vui lòng</strong> cung cấp ảnh CCCD của 2 khách để làm thủ tục check-in</li>
+                  <li><strong>Check out đúng giờ</strong> — để tránh ảnh hưởng đến khách sau</li>
+                  <li>Check-out trễ (từ 10 phút trở lên): <strong>Phụ thu</strong> theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+                  <li>Khi check-out, <strong>vui lòng</strong> quay video tình trạng phòng để xác nhận, giúp tránh phát sinh không đáng có</li>
+                  <li>Trường hợp phát sinh vệ sinh đặc biệt sau check-out sẽ áp dụng theo mức xử lý theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+                </ul>
+              </li>
+              <li><strong>KHÔNG vi phạm pháp luật</strong>
+                <ul class="rules-sublist">
+                  <li><strong>KHÔNG</strong> sử dụng, tàng trữ chất kích thích, mại dâm, cờ bạc hoặc bất kỳ hành vi vi phạm pháp luật nào tại 007 Staycation.</li>
+                </ul>
+              </li>
+              <li><strong>KHÔNG hút thuốc, sử dụng chất gây cháy nổ trong phòng</strong>
+                <ul class="rules-sublist">
+                  <li>Nếu hút thuốc trong phòng: <strong>Phạt</strong> theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+
+          <div class="rules-carousel__slide">
+            <h3 class="rules-carousel__title">Nội quy (tiếp theo)</h3>
+            <ol class="rules-list rules-list--numbered" start="4">
+              <li><strong>NGHIÊM CẤM</strong> sử dụng vape, thuốc lá điện tử trong toàn bộ khu vực tại 007 Staycation
+                <ul class="rules-sublist">
+                  <li>Nếu phát hiện, Home có quyền ngưng phục vụ và phối hợp cơ quan chức năng xử lý khi cần thiết</li>
+                </ul>
+              </li>
+              <li><strong>Nấu ăn &amp; vệ sinh</strong>
+                <ul class="rules-sublist">
+                  <li><strong>KHÔNG</strong> nấu ăn trong phòng (trừ phòng có bếp)</li>
+                  <li>Nếu sử dụng bếp, vui lòng giữ gìn vệ sinh, rửa sạch dụng cụ bếp và dọn dẹp sau khi sử dụng.</li>
+                </ul>
+              </li>
+              <li><strong>Giữ gìn không gian chung</strong>
+                <ul class="rules-sublist">
+                  <li><strong>KHÔNG</strong> mang đồ ăn nặng mùi, dầu mỡ lên giường, chăn, gối, thảm, rèm</li>
+                  <li><strong>Vui lòng</strong> bỏ rác đúng nơi quy định, không xả rác trong phòng, ban công và khu vực chung.</li>
+                  <li>Nếu phát sinh mùi hoặc vết bẩn khó xử lý: Phụ thu theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+                </ul>
+              </li>
+              <li><strong>Nội thất &amp; tài sản</strong>
+                <ul class="rules-sublist">
+                  <li><strong>KHÔNG</strong> tự ý di chuyển, thay đổi kết cấu, đóng đinh, dán keo hoặc treo đồ lên tường</li>
+                  <li>Nếu hư hỏng hoặc mất tài sản: <strong>bồi thường</strong> theo BẢNG PHỤ THU &amp; XỬ LÝ PHÁT SINH</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+
+          <div class="rules-carousel__slide">
+            <h3 class="rules-carousel__title">Bảng phụ thu &amp; xử lý phát sinh</h3>
+            <ol class="rules-list rules-list--numbered">
+              <li><strong>CHECK-IN / CHECK-OUT</strong>
+                <ul class="rules-sublist">
+                  <li>Check-out trễ (từ 10 phút trở lên): Phụ thu <strong>100.000đ</strong></li>
+                </ul>
+              </li>
+              <li><strong>VỆ SINH &amp; KHỬ MÙI</strong>
+                <ul class="rules-sublist">
+                  <li>Ga giường/ chăn/ gối dính máu hoặc vết bẩn khó tẩy: <strong>200.000đ/món</strong></li>
+                  <li>Nệm dính máu hoặc vết bẩn khó tẩy: <strong>300.000đ/lần vệ sinh</strong></li>
+                  <li>Khăn dính máu hoặc vết bẩn khó tẩy: <strong>100.000đ/món</strong></li>
+                  <li>Hút thuốc trong phòng: <strong>300.000đ/lần</strong></li>
+                  <li>Phát sinh mùi nặng trong phòng (đồ ăn, dầu mỡ, chất gây mùi,...): Phụ thu theo mức độ xử lý thực tế</li>
+                </ul>
+              </li>
+              <li><strong>THIẾT BỊ &amp; NỘI THẤT</strong>
+                <ul class="rules-sublist">
+                  <li>Làm bể hoặc hư hỏng thiết bị điện tử / nội thất / đồ gia dụng: Tính theo chi phí sửa chữa hoặc thay mới thực tế</li>
+                  <li>Làm mất tài sản, vật dụng trong phòng: Bồi thường theo giá trị thực tế</li>
+                  <li>Tự ý thay đổi bố cục, dán keo, đóng đinh hoặc tác động lên tường / nội thất: Phụ thu theo tình trạng khắc phục thực tế</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+
+        </div>
+        <button class="rules-carousel__arrow rules-carousel__arrow--prev" aria-label="Trang trước">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="rules-carousel__arrow rules-carousel__arrow--next" aria-label="Trang sau">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="rules-carousel__dots">
+          <span class="rules-carousel__dot is-active"></span>
+          <span class="rules-carousel__dot"></span>
+          <span class="rules-carousel__dot"></span>
+          <span class="rules-carousel__dot"></span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</section>
+
+<!-- BOOKING REQUEST MODAL — shown when a customer taps "BOOK PHÒNG" on a free room -->
+<div class="booking-modal" id="bookingModal" hidden>
+  <div class="booking-modal__backdrop" id="bookingModalBackdrop"></div>
+  <div class="booking-modal__box" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle">
+    <button class="booking-modal__close" id="bookingModalClose" aria-label="Đóng">✕</button>
+    <p class="tag mono">// PHIẾU YÊU CẦU ĐẶT PHÒNG</p>
+    <h3 id="bookingModalTitle">Xác nhận thông tin</h3>
+    <div class="booking-modal__details">
+      <div><span>Mã Phòng</span><strong id="bkRoomCode">—</strong></div>
+      <div><span>Ngày và giờ checkin</span><strong id="bkCheckin">—</strong></div>
+      <div><span>Ngày và giờ checkout</span><strong id="bkCheckout">—</strong></div>
+      <div><span>Thành tiền</span><strong id="bkTotal">—</strong></div>
+    </div>
+    <div class="booking-modal__actions">
+      <button class="btn btn--ghost" id="bkCopyBtn">Copy nội dung</button>
+      <a class="btn btn--primary" id="bkZaloBtn" target="_blank" rel="noopener" href="https://zalo.me/4382808736570152572">Gửi qua Zalo</a>
+      <a class="btn btn--primary" id="bkMessengerBtn" target="_blank" rel="noopener" href="https://m.me/007Staycation">Gửi qua Messenger</a>
+    </div>
+    <img class="booking-modal__hint-img" src="assets/images/chot-don.png" alt="Thử không đặt coi">
+    <p class="booking-modal__copied" id="bkCopiedNote" hidden>Đã copy nội dung phiếu!</p>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# Raw/unprocessed source photos at the project root — not used by the site.
+# The optimized images the site actually loads live under assets/.
+/NT_07574.JPG
+/NT_07584.JPG
+/NT_07819.JPG
+/NT_07827.JPG
+/NT_07831.JPG
+/NT_09407.JPG
+/NT_09454.JPG
+/NT_09463.JPG
+/NT_09563.JPG
+/NT_09581.JPG
+/NT_09597.JPG
+/Room 1.JPG
+/Logo.png
+/Logo new.png
+/1255ee38-9b76-4343-8f51-bd6bc99ef2e9.png
+/Ảnh phòng 007 STYACATION/
+/Ảnh phòng 007 THE CONCEPT/
+
+# Local machine-specific Claude Code settings — not shared project config.
+.claude/settings.local.json
