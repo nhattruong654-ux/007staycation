@@ -23,37 +23,6 @@
     nav.classList.toggle('is-scrolled', window.scrollY > 40);
   }, { passive:true });
 
-  /* ---------- Hero video — scrubs with scroll position across the whole
-     .hero-pin range (hero + branch-select), releasing once both have passed ---------- */
-  var heroPin = document.getElementById('heroPin');
-  var heroVideo = document.querySelector('.hero__video');
-  if (heroPin && heroVideo) {
-    var scrubHeroVideo = function(){
-      if (!heroVideo.duration) return;
-      var scrollableDist = heroPin.offsetHeight - window.innerHeight;
-      if (scrollableDist <= 0) return;
-      var rect = heroPin.getBoundingClientRect();
-      var progress = -rect.top / scrollableDist;
-      progress = Math.max(0, Math.min(1, progress));
-      heroVideo.currentTime = progress * heroVideo.duration;
-    };
-    window.addEventListener('scroll', scrubHeroVideo, { passive:true });
-    heroVideo.addEventListener('loadedmetadata', scrubHeroVideo);
-    // iOS Safari often never fully decodes a video that's only ever seeked
-    // via currentTime and never actually played — priming it with an
-    // immediate play()+pause() (muted, so autoplay policy allows it) forces
-    // that decode to happen so subsequent scroll-driven seeking works.
-    heroVideo.muted = true;
-    var primeHeroVideo = function(){
-      var playPromise = heroVideo.play();
-      if (playPromise && playPromise.then) {
-        playPromise.then(function(){ heroVideo.pause(); }).catch(function(){});
-      }
-    };
-    if (heroVideo.readyState >= 2) primeHeroVideo();
-    else heroVideo.addEventListener('loadeddata', primeHeroVideo, { once:true });
-  }
-
   var navLinksClose = document.getElementById('navLinksClose');
 
   function closeNav(){
