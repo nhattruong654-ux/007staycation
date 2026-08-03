@@ -152,7 +152,7 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
    whole section was simplified to plain static images.)
    ============================================================ */
 .hero{
-  position:relative; min-height:100vh; min-height:100dvh;
+  position:relative; min-height:100vh; min-height:100dvh; min-height:var(--real-vh, 100vh);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; overflow:hidden; padding:var(--space-4);
 }

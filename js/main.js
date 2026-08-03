@@ -1,6 +1,19 @@
 (function(){
   "use strict";
 
+  /* ---------- Real viewport height, computed in JS ---------- *
+   * CSS vh/dvh units have shown at least one confirmed real-device Safari
+   * rendering bug already this project (the old pinned hero video). Rather
+   * than trust the CSS unit for .hero's full-screen height, set an exact
+   * pixel value from window.innerHeight — this is always accurate to the
+   * actual visible viewport in every browser, no unit-quirk exceptions. */
+  function setRealVh(){
+    document.documentElement.style.setProperty('--real-vh', window.innerHeight + 'px');
+  }
+  setRealVh();
+  window.addEventListener('resize', setRealVh);
+  window.addEventListener('orientationchange', setRealVh);
+
   /* ---------- Nav scroll state + mobile toggle ---------- */
   var nav = document.getElementById('nav');
   var navToggle = document.getElementById('navToggle');
