@@ -1,6 +1,19 @@
 (function(){
   "use strict";
 
+  /* ---------- Real viewport height, computed in JS ---------- *
+   * CSS vh/dvh units are unreliable on real iPhones (confirmed on this
+   * project already). Rather than trust the CSS unit for .hero's
+   * full-screen height, set an exact pixel value from window.innerHeight —
+   * always accurate to the actual visible viewport, no unit-quirk
+   * exceptions. */
+  function setRealVh(){
+    document.documentElement.style.setProperty('--real-vh', window.innerHeight + 'px');
+  }
+  setRealVh();
+  window.addEventListener('resize', setRealVh);
+  window.addEventListener('orientationchange', setRealVh);
+
   /* ---------- Nav scroll state + mobile toggle ---------- */
   var nav = document.getElementById('nav');
   var navToggle = document.getElementById('navToggle');
