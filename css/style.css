@@ -150,13 +150,10 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
 .hud-corner--br{ bottom:0; right:0; border-bottom:1.5px solid; border-right:1.5px solid; }
 
 /* ============================================================
-   Hero — static mascot art, no video/sticky pinning. (An earlier version
-   used a scroll-scrubbed pinned video here, but it couldn't be made to
-   load reliably on real iPhones despite working fine on desktop, so the
-   whole section was simplified to plain static images.)
+   Hero — static mascot art, no video/sticky pinning.
    ============================================================ */
 .hero{
-  position:relative; min-height:100vh; min-height:100dvh; min-height:var(--real-vh, 100vh);
+  position:relative; min-height:100vh; min-height:100dvh;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; overflow:hidden; padding:var(--space-4);
 }
@@ -164,8 +161,8 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
 .hero__title{ font-size:var(--fs-hero); line-height:1.22; }
 .hero__title span span{ display:inline-block; }
 .hero__mascot{
-  width:82%; max-width:420px; aspect-ratio:1254/834; object-fit:contain;
-  margin:-8px 0 var(--space-4);
+  width:66%; max-width:380px; aspect-ratio:1000/737; object-fit:cover;
+  border-radius:var(--radius); margin:var(--space-4) 0;
 }
 .hero__actions{ display:flex; justify-content:center; }
 .hero__actions > span{ display:flex; gap:var(--space-2); flex-wrap:wrap; justify-content:center; }
@@ -218,10 +215,6 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
   display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
   gap:var(--space-3); margin-top:var(--space-4);
 }
-/* Sits between the two cards once they stack on mobile; on desktop the
-   cards run side by side with no natural gap to put it in, so it's hidden
-   there — see the max-width:720px override below. */
-.branch-select__mascot{ display:none; }
 .branch-card{
   background:var(--bg-elevated-2); border:1px solid var(--line); border-radius:var(--radius);
   overflow:hidden; text-align:left; cursor:pointer; padding:0;
@@ -517,6 +510,10 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
 
 @media (max-width: 720px){
   #top, #missions, #location, #reviews, #lien-he{ scroll-margin-top:115px; }
+  .hero__video{ display:none; }
+  /* Nudged down out of dead-center so it sits in the gap between the
+     title and the button instead of overlapping the title text. */
+  .hero__video-fallback{ display:block; transform:translateY(45px); }
   .nav__links{
     position:fixed; top:0; right:0; height:100vh; width:min(78vw,320px);
     background:var(--bg-elevated); flex-direction:column; align-items:flex-start;
@@ -539,12 +536,8 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
   .location-intro__inner{ padding-top:4px; padding-bottom:0; }
   .hud-corners{ inset:var(--space-2); }
   .hud-corner{ width:18px; height:18px; }
-  .branch-cards{ gap:var(--space-2); justify-items:center; }
+  .branch-cards{ gap:var(--space-3); justify-items:center; }
   .branch-card{ max-width:300px; width:100%; min-height:110px; }
-  .branch-select__mascot{
-    display:block; width:100%; max-width:260px; aspect-ratio:1024/1300;
-    object-fit:contain;
-  }
   .branch-card__body{ padding:12px; gap:4px; }
   .branch-card__name{ font-size:1rem; }
   .branch-card__addr{ font-size:0.68rem; }
