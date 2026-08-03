@@ -510,10 +510,6 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
 
 @media (max-width: 720px){
   #top, #missions, #location, #reviews, #lien-quy-dinh, #lien-he{ scroll-margin-top:115px; }
-  .hero__video{ display:none; }
-  /* Nudged down out of dead-center so it sits in the gap between the
-     title and the button instead of overlapping the title text. */
-  .hero__video-fallback{ display:block; transform:translateY(45px); }
   .nav__links{
     position:fixed; top:0; right:0; height:100vh; width:min(78vw,320px);
     background:var(--bg-elevated); flex-direction:column; align-items:flex-start;
