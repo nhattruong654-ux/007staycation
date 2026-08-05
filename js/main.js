@@ -840,7 +840,7 @@
   var bookingModal = document.getElementById('bookingModal');
   var bookingModalBackdrop = document.getElementById('bookingModalBackdrop');
   var bookingModalClose = document.getElementById('bookingModalClose');
-  var bkBranch = document.getElementById('bkBranch');
+  var bookingModalTitle = document.getElementById('bookingModalTitle');
   var bkRoomCode = document.getElementById('bkRoomCode');
   var bkCheckin = document.getElementById('bkCheckin');
   var bkCheckout = document.getElementById('bkCheckout');
@@ -862,7 +862,7 @@
     var checkinDisplay = formatCheckPoint(lastCheckin);
     var checkoutDisplay = formatCheckPoint(lastCheckout);
     var branchName = ROOMS[currentBranchKey].name;
-    bkBranch.textContent = branchName;
+    bookingModalTitle.textContent = branchName.toUpperCase() + ' xin xác nhận thông tin booking';
     bkRoomCode.textContent = codeDisplay;
     bkCheckin.textContent = checkinDisplay;
     bkCheckout.textContent = checkoutDisplay;
@@ -874,7 +874,7 @@
       ? totalDisplay + ' (đã gồm phụ thu trả phòng trễ)'
       : totalDisplay;
     currentBookingText =
-      'Chi nhánh: ' + branchName + '\n' +
+      branchName.toUpperCase() + ' xin xác nhận thông tin booking' + '\n' +
       'Mã Phòng: ' + codeDisplay + '\n' +
       'Ngày và giờ checkin: ' + checkinDisplay + '\n' +
       'Ngày và giờ checkout: ' + checkoutDisplay + '\n' +
