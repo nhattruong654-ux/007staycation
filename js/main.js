@@ -907,8 +907,10 @@
   var bkCopiedNote = document.getElementById('bkCopiedNote');
   var currentBookingText = '';
 
+  var WEEKDAY_NAMES = ['Chủ Nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
   function formatCheckPoint(point){
-    return minutesToClock(point.min) + ' (' + point.date.getDate() + '/' + (point.date.getMonth() + 1) + ')';
+    return minutesToClock(point.min) + ' (' + point.date.getDate() + '/' + (point.date.getMonth() + 1) +
+      ', ' + WEEKDAY_NAMES[point.date.getDay()] + ')';
   }
 
   function openBookingModal(room){
