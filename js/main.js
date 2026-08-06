@@ -521,6 +521,7 @@
     if (suggestedStart - requestedStartMin > MAX_DISTANCE) return null;
     if (((suggestedStart % 1440) + 1440) % 1440 >= LATEST_START) return null;
     var nextStart = Infinity;
+    var blocked = false;
     rows.forEach(function(row){
       if (row.branch !== branchCode || row.room !== room) return;
       var span = bookingSpanMinutes(row);
@@ -528,9 +529,16 @@
       if (sameDay(row.date, reqDate)) offset = 0;
       else if (sameDay(row.date, addDays(reqDate, 1))) offset = 1440;
       else return;
-      var s = span.start + offset;
+      var s = span.start + offset, e = span.end + offset;
+      // A booking that's already running at (or starts exactly at)
+      // suggestedStart makes the whole suggestion invalid outright — the
+      // old check only looked at bookings starting strictly after
+      // suggestedStart, so it missed exactly this case and could suggest a
+      // slot that was already booked.
+      if (s <= suggestedStart && e > suggestedStart) { blocked = true; return; }
       if (s > suggestedStart && s < nextStart) nextStart = s;
     });
+    if (blocked) return null;
     var gap = nextStart === Infinity ? Infinity : nextStart - suggestedStart;
     if (gap < MIN_GAP) return null;
     var usableMin = Math.min(requestedDurationMin, gap - CLEAN_BUFFER);
