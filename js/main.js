@@ -793,6 +793,14 @@
       var t = parseVNTime(availTime.value);
       if (!t) { availStatus.textContent = 'Vui lòng chọn giờ vào.'; return; }
       reqStartMin = t.h * 60 + t.m;
+      // Combo (theo giờ) is only offered up to 21:00 check-in — past that,
+      // point the guest at "Qua đêm" instead of computing a combo price
+      // for a window that isn't actually sold that late.
+      if (reqStartMin > 21 * 60) {
+        resetAvailability();
+        availStatus.textContent = 'Chỉ còn qua đêm — vui lòng chuyển sang chế độ "Qua đêm".';
+        return;
+      }
       reqEndMin = reqStartMin + parseInt(availDuration.value, 10) * 60;
       lastCheckin = { date: reqDate, min: reqStartMin };
       lastCheckout = { date: addDays(reqDate, Math.floor(reqEndMin / 1440)), min: reqEndMin % 1440 };
@@ -837,9 +845,10 @@
           }
         } else {
           conflict = findConflict(rows, branchCode, room, reqDate, reqStartMin, reqEndMin);
-          // Overnight check-outs past 22:00 aren't offered — too late in the
-          // day to still call it "qua đêm" — so show "hết phòng" instead.
-          if (!conflict && availMode === 'overnight' && reqEndMin > 1440 + 22 * 60) {
+          // Overnight check-outs past 22:00 aren't offered on Saturdays —
+          // too late in the day to still call it "qua đêm" — so show "hết
+          // phòng" instead. Other days don't have this cutoff.
+          if (!conflict && availMode === 'overnight' && isSaturday(reqDate) && reqEndMin > 1440 + 22 * 60) {
             conflict = { start: reqStartMin, end: reqEndMin };
           }
         }
