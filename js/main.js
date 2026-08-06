@@ -471,11 +471,25 @@
         var rows = parseCsv(text);
         rows.shift(); // header row: Tên chi nhánh, NGÀY ĐẶT, PHÒNG, GIỜ IN, GIỜ OUT, NGÀY OUT, CHI NHÁNH
         availCache = rows.map(function(r){
+          var checkinDate = parseVNDate(r[1]);
+          var checkoutDate = parseVNDate(r[5]);
+          // NGÀY OUT is the authoritative checkout date — multi-night stays
+          // (e.g. check-in today, check-out 2 days later) need it, since
+          // guessing from GIỜ IN/GIỜ OUT alone can only ever detect a single
+          // midnight crossing, not several. Falls back to that guess only
+          // when NGÀY OUT is missing/unparseable or looks bogus (before
+          // check-in).
+          var dayOffset = null;
+          if (checkinDate && checkoutDate) {
+            var diff = Math.round((checkoutDate - checkinDate) / 86400000);
+            if (diff >= 0) dayOffset = diff;
+          }
           return {
-            date: parseVNDate(r[1]),
+            date: checkinDate,
             room: (r[2] || '').trim(),
             start: parseVNTime(r[3]),
             end: parseVNTime(r[4]),
+            dayOffset: dayOffset,
             branch: (r[6] || '').trim().toUpperCase()
           };
         }).filter(function(r){ return r.date && r.branch && r.room && r.start && r.end; });
@@ -485,12 +499,15 @@
     return availFetchPromise;
   }
 
-  // Booking end <= start means the stay crosses midnight into the next day.
+  // Uses the sheet's own NGÀY OUT when available (row.dayOffset, set in
+  // loadAvailability) so multi-night stays report the real checkout day
+  // instead of just guessing "next day" from end<=start, which can only
+  // ever detect a single midnight crossing.
   function bookingSpanMinutes(row){
     var startMin = row.start.h * 60 + row.start.m;
     var endMin = row.end.h * 60 + row.end.m;
-    if (endMin <= startMin) endMin += 1440;
-    return { start: startMin, end: endMin };
+    var offsetDays = row.dayOffset != null ? row.dayOffset : (endMin <= startMin ? 1 : 0);
+    return { start: startMin, end: offsetDays * 1440 + endMin };
   }
 
   // Cleaning-staff constraint: only 2 rooms per branch can be turned around
@@ -519,20 +536,20 @@
 
   // Checks [reqStartMin, reqEndMin) on reqDate against every booking for this
   // room/branch, treating each booking as occupying the room through its own
-  // checkout + cleaning buffer. Bookings from the previous calendar day are
-  // also checked, since an overnight stay can bleed into the next morning.
+  // checkout + cleaning buffer. Shifts each booking's [start, bufferedEnd)
+  // window by however many days reqDate falls after the booking's check-in
+  // date, so this works no matter which day of a (possibly multi-night)
+  // stay reqDate lands on — not just the check-in day or the day after.
   function findConflict(rows, branchCode, room, reqDate, reqStartMin, reqEndMin){
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       if (row.branch !== branchCode || row.room !== room) continue;
       var span = bookingSpanMinutes(row);
       var bufferedEnd = span.end + (row.cleanBuffer || 30);
-      if (sameDay(row.date, reqDate)) {
-        if (span.start < reqEndMin && bufferedEnd > reqStartMin) return { start: span.start, end: bufferedEnd };
-      } else if (sameDay(row.date, addDays(reqDate, -1))) {
-        var shiftedStart = span.start - 1440, shiftedEnd = bufferedEnd - 1440;
-        if (shiftedStart < reqEndMin && shiftedEnd > reqStartMin) return { start: shiftedStart, end: shiftedEnd };
-      }
+      var dayDiff = Math.round((reqDate - row.date) / 86400000);
+      var shiftedStart = span.start - dayDiff * 1440;
+      var shiftedEnd = bufferedEnd - dayDiff * 1440;
+      if (shiftedStart < reqEndMin && shiftedEnd > reqStartMin) return { start: shiftedStart, end: shiftedEnd };
     }
     return null;
   }
