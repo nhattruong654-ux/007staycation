@@ -479,6 +479,7 @@
             branch: (r[6] || '').trim().toUpperCase()
           };
         }).filter(function(r){ return r.date && r.branch && r.room && r.start && r.end; });
+        computeCleaningBuffers(availCache);
         return availCache;
       });
     return availFetchPromise;
@@ -492,18 +493,44 @@
     return { start: startMin, end: endMin };
   }
 
+  // Cleaning-staff constraint: only 2 rooms per branch can be turned around
+  // in the standard 30-minute buffer after checkout. If 3 or more rooms in
+  // the same branch check out at the exact same time, the 3rd room onward
+  // (by the branch's room listing order) isn't actually bookable again
+  // until a full hour has passed. Computed once per data load and stashed
+  // on each row as row.cleanBuffer, so findConflict/suggestNearestSlot can
+  // just read it.
+  function computeCleaningBuffers(rows){
+    var groups = {};
+    rows.forEach(function(row){
+      var span = bookingSpanMinutes(row);
+      var key = row.branch + '|' + row.date.getTime() + '|' + span.end;
+      (groups[key] || (groups[key] = [])).push(row);
+    });
+    Object.keys(groups).forEach(function(key){
+      var group = groups[key];
+      var branchKey = null;
+      for (var k in BRANCH_CODE) { if (BRANCH_CODE[k] === group[0].branch) { branchKey = k; break; } }
+      var order = (branchKey && ROOMS[branchKey] && ROOMS[branchKey].rooms) || [];
+      group.sort(function(a, b){ return order.indexOf(a.room) - order.indexOf(b.room); });
+      group.forEach(function(row, idx){ row.cleanBuffer = idx < 2 ? 30 : 60; });
+    });
+  }
+
   // Checks [reqStartMin, reqEndMin) on reqDate against every booking for this
-  // room/branch. Bookings from the previous calendar day are also checked,
-  // since an overnight stay can bleed into the next morning.
+  // room/branch, treating each booking as occupying the room through its own
+  // checkout + cleaning buffer. Bookings from the previous calendar day are
+  // also checked, since an overnight stay can bleed into the next morning.
   function findConflict(rows, branchCode, room, reqDate, reqStartMin, reqEndMin){
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       if (row.branch !== branchCode || row.room !== room) continue;
       var span = bookingSpanMinutes(row);
+      var bufferedEnd = span.end + (row.cleanBuffer || 30);
       if (sameDay(row.date, reqDate)) {
-        if (span.start < reqEndMin && span.end > reqStartMin) return span;
+        if (span.start < reqEndMin && bufferedEnd > reqStartMin) return { start: span.start, end: bufferedEnd };
       } else if (sameDay(row.date, addDays(reqDate, -1))) {
-        var shiftedStart = span.start - 1440, shiftedEnd = span.end - 1440;
+        var shiftedStart = span.start - 1440, shiftedEnd = bufferedEnd - 1440;
         if (shiftedStart < reqEndMin && shiftedEnd > reqStartMin) return { start: shiftedStart, end: shiftedEnd };
       }
     }
@@ -511,13 +538,14 @@
   }
 
   // For a room that's busy at the requested hourly slot, suggest the nearest
-  // later slot: conflicting booking's checkout + 30-min cleaning buffer, only
+  // later slot: conflicting booking's checkout + its cleaning buffer
+  // (conflictSpan.end already has this baked in — see findConflict), only
   // if that start is within 2h of the requested time, isn't after 22:00 (too
   // late in the day to bother offering), AND the room then stays free for at
   // least 3h30 before its next booking (otherwise not worth it).
   function suggestNearestSlot(rows, branchCode, room, reqDate, requestedStartMin, requestedDurationMin, conflictSpan){
     var CLEAN_BUFFER = 30, MIN_GAP = 210, MAX_DISTANCE = 120, LATEST_START = 22 * 60;
-    var suggestedStart = conflictSpan.end + CLEAN_BUFFER;
+    var suggestedStart = conflictSpan.end;
     if (suggestedStart - requestedStartMin > MAX_DISTANCE) return null;
     if (((suggestedStart % 1440) + 1440) % 1440 >= LATEST_START) return null;
     var nextStart = Infinity;
@@ -529,7 +557,7 @@
       if (sameDay(row.date, reqDate)) offset = 0;
       else if (sameDay(row.date, addDays(reqDate, 1))) offset = 1440;
       else return;
-      var s = span.start + offset, e = span.end + offset;
+      var s = span.start + offset, e = span.end + offset + (row.cleanBuffer || 30);
       // A booking that's already running at (or starts exactly at)
       // suggestedStart makes the whole suggestion invalid outright — the
       // old check only looked at bookings starting strictly after
