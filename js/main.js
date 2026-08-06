@@ -557,17 +557,17 @@
   // For a room that's busy at the requested hourly slot, suggest the nearest
   // later slot: conflicting booking's checkout + its cleaning buffer
   // (conflictSpan.end already has this baked in — see findConflict), only
-  // if that start is within 2h of the requested time, isn't after 22:00 (too
-  // late in the day to bother offering — 21:00 on Saturdays specifically,
-  // since Saturday nights book up fast and a nearest-slot offer that late
-  // isn't useful), AND the room then stays free for at least 3h30 before
-  // its next booking (otherwise not worth it).
+  // if that start is within 2h of the requested time AND the room then
+  // stays free for at least 3h30 before its next booking (otherwise not
+  // worth it). No late-day cutoff except Saturday (21:00) — Saturday
+  // nights book up fast enough that a nearest-slot offer that late isn't
+  // useful, but combo is bookable any time on other days, so suggestions
+  // are offered any time too, including past 22:00.
   function suggestNearestSlot(rows, branchCode, room, reqDate, requestedStartMin, requestedDurationMin, conflictSpan){
     var CLEAN_BUFFER = 30, MIN_GAP = 210, MAX_DISTANCE = 120;
-    var LATEST_START = isSaturday(reqDate) ? 21 * 60 : 22 * 60;
     var suggestedStart = conflictSpan.end;
     if (suggestedStart - requestedStartMin > MAX_DISTANCE) return null;
-    if (((suggestedStart % 1440) + 1440) % 1440 >= LATEST_START) return null;
+    if (isSaturday(reqDate) && ((suggestedStart % 1440) + 1440) % 1440 >= 21 * 60) return null;
     var nextStart = Infinity;
     var blocked = false;
     rows.forEach(function(row){
