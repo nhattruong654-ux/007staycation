@@ -793,6 +793,14 @@
       var t = parseVNTime(availTime.value);
       if (!t) { availStatus.textContent = 'Vui lòng chọn giờ vào.'; return; }
       reqStartMin = t.h * 60 + t.m;
+      // Combo (theo giờ) is bookable any time of day except Saturday night
+      // after 22:00 — Saturday's overnight demand means combo isn't
+      // offered that late, point the guest at "Qua đêm" instead.
+      if (isSaturday(reqDate) && reqStartMin > 22 * 60) {
+        resetAvailability();
+        availStatus.textContent = 'Chỉ còn qua đêm — vui lòng chuyển sang chế độ "Qua đêm".';
+        return;
+      }
       reqEndMin = reqStartMin + parseInt(availDuration.value, 10) * 60;
       lastCheckin = { date: reqDate, min: reqStartMin };
       lastCheckout = { date: addDays(reqDate, Math.floor(reqEndMin / 1440)), min: reqEndMin % 1440 };
