@@ -827,9 +827,9 @@
       if (!t) { availStatus.textContent = 'Vui lòng chọn giờ vào.'; return; }
       reqStartMin = t.h * 60 + t.m;
       // Combo (theo giờ) is bookable any time of day except Saturday night
-      // from 21:00 onward — Saturday's overnight demand means combo isn't
+      // from 19:00 onward — Saturday's overnight demand means combo isn't
       // offered that late, point the guest at "Qua đêm" instead.
-      if (isSaturday(reqDate) && reqStartMin >= 21 * 60) {
+      if (isSaturday(reqDate) && reqStartMin >= 19 * 60) {
         resetAvailability();
         var qdMsg = 'Chỉ còn qua đêm — vui lòng chuyển sang chế độ "Qua đêm".';
         availStatus.textContent = qdMsg;
