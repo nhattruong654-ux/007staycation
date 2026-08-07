@@ -540,7 +540,14 @@
   // window by however many days reqDate falls after the booking's check-in
   // date, so this works no matter which day of a (possibly multi-night)
   // stay reqDate lands on — not just the check-in day or the day after.
+  //
+  // Also requires REQUEST_BUFFER minutes of clearance before a booking that
+  // starts AFTER the requested window — otherwise a search could show
+  // "Còn phòng" for a slot that ends the exact minute the next guest checks
+  // in, leaving no time to clean (e.g. an existing 15:00-18:00 booking and
+  // a combo search for 12:00-15:00: no overlap, but zero turnaround time).
   function findConflict(rows, branchCode, room, reqDate, reqStartMin, reqEndMin){
+    var REQUEST_BUFFER = 30;
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       if (row.branch !== branchCode || row.room !== room) continue;
@@ -549,7 +556,7 @@
       var dayDiff = Math.round((reqDate - row.date) / 86400000);
       var shiftedStart = span.start - dayDiff * 1440;
       var shiftedEnd = bufferedEnd - dayDiff * 1440;
-      if (shiftedStart < reqEndMin && shiftedEnd > reqStartMin) return { start: shiftedStart, end: shiftedEnd };
+      if (shiftedStart - REQUEST_BUFFER < reqEndMin && shiftedEnd > reqStartMin) return { start: shiftedStart, end: shiftedEnd };
     }
     return null;
   }
