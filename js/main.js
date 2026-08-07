@@ -600,6 +600,32 @@
     return { start: suggestedStart, end: suggestedStart + usableMin };
   }
 
+  // For a room that's free at the requested start but whose requested
+  // checkout doesn't leave the 30-min cleaning buffer before a booking
+  // later that day, suggest shifting the whole stay earlier by just
+  // enough to clear that buffer, keeping the same duration — e.g. an
+  // existing 15:00-18:00 booking with a combo search for 12:00 (ending
+  // exactly at 15:00) suggests 11:30-14:30 instead of just showing "Hết
+  // phòng" with no alternative.
+  function suggestEarlierSlot(rows, branchCode, room, reqDate, requestedStartMin, requestedDurationMin){
+    var REQUEST_BUFFER = 30, MAX_DISTANCE = 120;
+    var nextStart = Infinity;
+    rows.forEach(function(row){
+      if (row.branch !== branchCode || row.room !== room) return;
+      var span = bookingSpanMinutes(row);
+      var dayDiff = Math.round((reqDate - row.date) / 86400000);
+      var s = span.start - dayDiff * 1440;
+      if (s >= requestedStartMin && s < nextStart) nextStart = s;
+    });
+    if (nextStart === Infinity) return null;
+    var latestEnd = nextStart - REQUEST_BUFFER;
+    var earlierStart = latestEnd - requestedDurationMin;
+    if (earlierStart >= requestedStartMin) return null;
+    if (requestedStartMin - earlierStart > MAX_DISTANCE) return null;
+    if (findConflict(rows, branchCode, room, reqDate, earlierStart, latestEnd)) return null;
+    return { start: earlierStart, end: latestEnd };
+  }
+
   var availTabs = document.querySelectorAll('.availability__tab');
   var availDay = document.getElementById('availDay');
   var availMonth = document.getElementById('availMonth');
@@ -886,7 +912,16 @@
           priceEl.hidden = true;
           var suggestionEl = statusCol.querySelector('.room-card__suggestion');
           if (availMode === 'hour') {
-            var suggestion = suggestNearestSlot(rows, branchCode, room, reqDate, reqStartMin, reqEndMin - reqStartMin, conflict);
+            // If the conflicting booking's own start is at/after the
+            // requested checkout, there's no actual time overlap — the
+            // room was free to check in, the problem is only that the
+            // requested checkout doesn't leave buffer before that booking
+            // — so offer shifting earlier instead of later. Otherwise the
+            // booking genuinely overlaps the requested window, so keep
+            // offering the next slot after it clears.
+            var suggestion = conflict.start >= reqEndMin
+              ? suggestEarlierSlot(rows, branchCode, room, reqDate, reqStartMin, reqEndMin - reqStartMin)
+              : suggestNearestSlot(rows, branchCode, room, reqDate, reqStartMin, reqEndMin - reqStartMin, conflict);
             if (suggestion) {
               suggestionEl.innerHTML = 'Bạn có thể book phòng này từ <strong>' + minutesToClock(suggestion.start) +
                 '</strong> đến <strong>' + minutesToClock(suggestion.end) + '</strong>';
