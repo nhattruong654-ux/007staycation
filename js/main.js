@@ -831,7 +831,12 @@
       // offered that late, point the guest at "Qua đêm" instead.
       if (isSaturday(reqDate) && reqStartMin > 21 * 60) {
         resetAvailability();
-        availStatus.textContent = 'Chỉ còn qua đêm — vui lòng chuyển sang chế độ "Qua đêm".';
+        var qdMsg = 'Chỉ còn qua đêm — vui lòng chuyển sang chế độ "Qua đêm".';
+        availStatus.textContent = qdMsg;
+        roomGrid.querySelectorAll('.room-card__suggestion').forEach(function(el){
+          el.innerHTML = qdMsg;
+          el.hidden = false;
+        });
         return;
       }
       reqEndMin = reqStartMin + parseInt(availDuration.value, 10) * 60;
