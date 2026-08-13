@@ -210,11 +210,14 @@
   }
   function extraHourRate(branchKey){ return branchKey === 'cn1' ? CN1_EXTRA_HOUR : CN2_EXTRA_HOUR; }
 
+  // Shown in place of roomPriceTableHtml's output whenever the customer's
+  // searched date(s) touch a holiday surcharge window — see the
+  // .room-card__price-slot swap in the availSearchBtn handler.
+  function roomPriceNoticeHtml(promo){
+    return '<p class="room-card__price-notice">Giá đã thay đổi do ảnh hưởng của ' + promo.label + '.</p>';
+  }
+
   function roomPriceTableHtml(branchKey, room){
-    var activePromo = holidayPromoFor(todayDateOnly());
-    if (activePromo) {
-      return '<p class="room-card__price-notice">Giá đã thay đổi do ảnh hưởng của ' + activePromo.label + '. Vui lòng liên hệ trực tiếp để được báo giá chính xác.</p>';
-    }
     var p = priceFor(branchKey, room);
     var rows = [
       ['Combo 3h', '10:00 – 21:00', [p.combo[0], p.combo[1], p.combo[1]]],
@@ -357,7 +360,7 @@
         '</div>' +
         '<div class="room-card__body">' +
           '<h3>' + name + '</h3>' +
-          roomPriceTableHtml(branchKey, name) +
+          '<div class="room-card__price-slot">' + roomPriceTableHtml(branchKey, name) + '</div>' +
           '<div class="room-card__body-cols">' +
             '<div class="room-card__amenities-col">' + amenitiesOrFallbackHtml(branchKey, name) + '</div>' +
             '<div class="room-card__status-col">' +
@@ -892,6 +895,24 @@
       lastCheckin = { date: reqDate, min: dayTimeInMin };
       lastCheckout = { date: checkoutDate, min: dayTimeOutMin };
     }
+
+    // Does the searched stay touch a holiday surcharge window? Mirrors how
+    // computeBookingPrice checks it — a single reqDate check for hour/
+    // overnight, a per-night scan for day mode — so the static price
+    // table swap below always agrees with the price computed further down.
+    var searchPromo = null;
+    if (availMode === 'day' && checkoutDate) {
+      var promoNights = Math.max(1, Math.round((checkoutDate - reqDate) / 86400000));
+      for (var pn = 0; pn < promoNights && !searchPromo; pn++) {
+        searchPromo = holidayPromoFor(addDays(reqDate, pn));
+      }
+    } else {
+      searchPromo = holidayPromoFor(reqDate);
+    }
+    roomGrid.querySelectorAll('.room-card__price-slot').forEach(function(slot){
+      var roomName = slot.closest('.room-card').dataset.room;
+      slot.innerHTML = searchPromo ? roomPriceNoticeHtml(searchPromo) : roomPriceTableHtml(currentBranchKey, roomName);
+    });
 
     resetAvailability();
     availStatus.textContent = 'Đang kiểm tra...';
