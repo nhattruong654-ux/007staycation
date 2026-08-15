@@ -608,7 +608,6 @@
     var CLEAN_BUFFER = 30, MIN_GAP = 210, MAX_DISTANCE = 120;
     var suggestedStart = conflictSpan.end;
     if (suggestedStart - requestedStartMin > MAX_DISTANCE) return null;
-    if (isSaturday(reqDate) && ((suggestedStart % 1440) + 1440) % 1440 >= 21 * 60) return null;
     var nextStart = Infinity;
     var blocked = false;
     rows.forEach(function(row){
@@ -979,7 +978,13 @@
             var suggestion = conflict.start >= reqEndMin
               ? suggestEarlierSlot(rows, branchCode, room, reqDate, reqStartMin, reqEndMin - reqStartMin)
               : suggestNearestSlot(rows, branchCode, room, reqDate, reqStartMin, reqEndMin - reqStartMin, conflict);
-            if (suggestion) {
+            // On Saturday, don't offer a combo slot starting at/after 19:00 —
+            // same cutoff as the global check above — point the guest at
+            // "qua đêm" instead of a late-night hourly suggestion.
+            if (suggestion && isSaturday(reqDate) && suggestion.start >= 19 * 60) {
+              suggestionEl.innerHTML = 'Chỉ còn qua đêm — vui lòng chuyển sang chế độ "Qua đêm".';
+              suggestionEl.hidden = false;
+            } else if (suggestion) {
               suggestionEl.innerHTML = 'Bạn có thể book phòng này từ <strong>' + minutesToClock(suggestion.start) +
                 '</strong> đến <strong>' + minutesToClock(suggestion.end) + '</strong>';
               suggestionEl.hidden = false;
