@@ -423,7 +423,7 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
 .room-card__price-notice{
   font-size:0.78rem; line-height:1.5; color:var(--accent-strong); margin:0 0 var(--space-3);
   background:var(--bg-elevated); border:1px dashed var(--line-strong);
-  border-radius:var(--radius); padding:10px 12px;
+  border-radius:var(--radius); padding:10px 12px; text-align:center;
 }
 .room-card__computed-price{
   font-size:0.9rem; font-weight:700; color:var(--accent-strong); text-align:center;
