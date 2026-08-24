@@ -182,6 +182,23 @@
   var CN2_EXTRA_HOUR = [90000, 90000];
 
   function formatVND(n){ return Math.round(n / 1000) + 'k'; }
+
+  // Holiday surcharge windows — every day in range charges 120% of the
+  // room's normal weekend (T6–CN) rate, regardless of what weekday it
+  // actually falls on. The breakdown (room price + holiday surcharge =
+  // total) is summarized on the booking request slip — see
+  // openBookingModal — not shown on the static per-room price table.
+  var HOLIDAY_PROMOS = [
+    { start: new Date(2026, 7, 29), end: new Date(2026, 8, 2), multiplier: 1.2, label: 'dịp lễ 2/9' }
+  ];
+  function holidayPromoFor(date){
+    for (var i = 0; i < HOLIDAY_PROMOS.length; i++) {
+      var promo = HOLIDAY_PROMOS[i];
+      if (date >= promo.start && date <= promo.end) return promo;
+    }
+    return null;
+  }
+
   // Pricing table's own weekend column is "THỨ 6 – CN" (Fri–Sun); Mon–Thu is the weekday column.
   function isWeekendRate(date){ var d = date.getDay(); return d === 0 || d === 5 || d === 6; }
   function isSaturday(date){ return date.getDay() === 6; }
@@ -232,24 +249,45 @@
   // Computes the price for the exact search the customer just ran, mirroring
   // the packages above (combo + extra-hour, Sat-aware overnight with late
   // checkout surcharge, or per-day for CN1).
+  // Returns { total, note, basePrice, holidaySurcharge, holidayLabel,
+  // holidayPercent }. basePrice/holidaySurcharge/holidayLabel are only
+  // meaningful when holidaySurcharge > 0 — that breakdown is what
+  // openBookingModal shows on the booking request slip, e.g. "300k + phụ
+  // thu dịp lễ 2/9 (20%): 60k = 360k". total already includes the
+  // surcharge either way, so every other caller (room-card quick price)
+  // can keep using priced.total unchanged.
   function computeBookingPrice(branchKey, room, mode, reqDate, checkoutDate, reqStartMin, reqEndMin){
     var p = priceFor(branchKey, room);
     var extra = extraHourRate(branchKey);
+    var holidayPromo = holidayPromoFor(reqDate);
     if (mode === 'hour') {
       var wk = isWeekendRate(reqDate) ? 1 : 0;
       var hours = parseInt(availDuration.value, 10) || 3;
-      var total = p.combo[wk] + Math.max(0, hours - 3) * extra[wk];
-      return { total: total, note: hours > 3 ? ('Combo 3h + ' + (hours - 3) + ' giờ thêm') : 'Combo 3h' };
+      var basePrice = holidayPromo ? p.combo[1] : p.combo[wk];
+      var comboTotal = holidayPromo ? Math.round(p.combo[1] * holidayPromo.multiplier) : p.combo[wk];
+      var total = comboTotal + Math.max(0, hours - 3) * extra[wk];
+      return {
+        total: total, note: hours > 3 ? ('Combo 3h + ' + (hours - 3) + ' giờ thêm') : 'Combo 3h',
+        basePrice: basePrice, holidaySurcharge: comboTotal - basePrice,
+        holidayLabel: holidayPromo ? holidayPromo.label : null,
+        holidayPercent: holidayPromo ? Math.round((holidayPromo.multiplier - 1) * 100) : null
+      };
     }
     if (mode === 'overnight') {
-      var base = overnightRate(p, reqDate);
+      var baseON = holidayPromo ? p.overnight.normal : overnightRate(p, reqDate);
+      var overnightTotal = holidayPromo ? Math.round(p.overnight.normal * holidayPromo.multiplier) : overnightRate(p, reqDate);
       var surcharge = 0;
       if (reqStartMin != null && reqEndMin != null) {
         var included = includedOvernightCheckoutMin(reqStartMin);
         surcharge = overtimeSurcharge(reqEndMin - included, overtimeRates(branchKey, reqDate));
       }
-      var note = 'Qua đêm' + (isSaturday(reqDate) ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu lệch giờ' : '');
-      return { total: base + surcharge, note: note };
+      var note = 'Qua đêm' + (isSaturday(reqDate) && !holidayPromo ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu lệch giờ' : '');
+      return {
+        total: overnightTotal + surcharge, note: note,
+        basePrice: baseON, holidaySurcharge: overnightTotal - baseON,
+        holidayLabel: holidayPromo ? holidayPromo.label : null,
+        holidayPercent: holidayPromo ? Math.round((holidayPromo.multiplier - 1) * 100) : null
+      };
     }
     // mode === 'day' — standard window for the whole stay is check-in 11:00
     // on the first day → check-out 09:00 on the final day (regardless of
@@ -258,10 +296,17 @@
     // charged with the same overtime rates as "Qua đêm".
     if (!p.fullday) return null; // rooms with no full-day package — direct contact instead
     var nights = Math.max(1, Math.round((checkoutDate - reqDate) / 86400000));
-    var total2 = 0;
+    var basePrice2 = 0, holidaySurcharge2 = 0, dayPromo = null;
     for (var i = 0; i < nights; i++) {
       var d = addDays(reqDate, i);
-      total2 += p.fullday[isWeekendRate(d) ? 1 : 0];
+      var nightPromo = holidayPromoFor(d);
+      if (nightPromo) {
+        dayPromo = nightPromo;
+        basePrice2 += p.fullday[1];
+        holidaySurcharge2 += Math.round(p.fullday[1] * nightPromo.multiplier) - p.fullday[1];
+      } else {
+        basePrice2 += p.fullday[isWeekendRate(d) ? 1 : 0];
+      }
     }
     var surcharge2 = 0;
     if (reqStartMin != null && reqEndMin != null) {
@@ -270,7 +315,12 @@
       surcharge2 = overtimeSurcharge(actualTotalMin - includedTotalMin, overtimeRates(branchKey, reqDate));
     }
     var note2 = nights + ' ngày (Nguyên ngày)' + (surcharge2 > 0 ? ' + phụ thu lệch giờ' : '');
-    return { total: total2 + surcharge2, note: note2 };
+    return {
+      total: basePrice2 + holidaySurcharge2 + surcharge2, note: note2,
+      basePrice: basePrice2, holidaySurcharge: holidaySurcharge2,
+      holidayLabel: dayPromo ? dayPromo.label : null,
+      holidayPercent: dayPromo ? Math.round((dayPromo.multiplier - 1) * 100) : null
+    };
   }
 
   function amenitiesOrFallbackHtml(branchKey, name){
@@ -983,15 +1033,24 @@
     var modalReqEndMin = availMode === 'day' ? lastCheckout.min : lastCheckout.min + dayDiff * 1440;
     var priced = computeBookingPrice(currentBranchKey, room, availMode, lastCheckin.date, lastCheckout.date, lastCheckin.min, modalReqEndMin);
     var totalDisplay = priced ? formatVND(priced.total) : 'Liên hệ trực tiếp';
-    bkTotal.textContent = (priced && priced.note && priced.note.indexOf('phụ thu') !== -1)
-      ? totalDisplay + ' (đã gồm phụ thu trả phòng trễ)'
-      : totalDisplay;
+    var lateNote = (priced && priced.note && priced.note.indexOf('phụ thu') !== -1) ? ' (đã gồm phụ thu trả phòng trễ)' : '';
+    // When the stay touches a holiday surcharge window, break the total down
+    // on the slip: room price + holiday surcharge = total, e.g. "300k + phụ
+    // thu dịp lễ 2/9 (20%): 60k = 360k" — instead of just the final number.
+    var holidayLine = (priced && priced.holidaySurcharge > 0)
+      ? formatVND(priced.basePrice) + ' + phụ thu ' + priced.holidayLabel + ' (' + priced.holidayPercent + '%): ' + formatVND(priced.holidaySurcharge) + ' = ' + totalDisplay
+      : null;
+    bkTotal.textContent = (holidayLine || totalDisplay) + lateNote;
     currentBookingText =
       branchName.toUpperCase() + ' xin xác nhận thông tin booking' + '\n' +
       'Mã Phòng: ' + codeDisplay + '\n' +
       'Ngày và giờ checkin: ' + checkinDisplay + '\n' +
       'Ngày và giờ checkout: ' + checkoutDisplay + '\n' +
-      'Thành tiền: ' + totalDisplay;
+      (holidayLine
+        ? 'Tiền phòng: ' + formatVND(priced.basePrice) + '\n' +
+          'Phụ thu ' + priced.holidayLabel + ' (' + priced.holidayPercent + '%): ' + formatVND(priced.holidaySurcharge) + '\n' +
+          'Thành tiền: ' + totalDisplay + lateNote
+        : 'Thành tiền: ' + totalDisplay + lateNote);
     bkCopiedNote.hidden = true;
     bookingModal.hidden = false;
   }
