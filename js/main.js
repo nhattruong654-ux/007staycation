@@ -168,7 +168,7 @@
   var PRICE_TABLE_B = { combo:[200000,230000], overnight:{normal:350000, saturday:400000}, fullday:[600000,700000] };
   var CN1_ROOM_PRICE = {
     'Mission 001': PRICE_TABLE_A, 'Mission 002': PRICE_TABLE_B, 'Mission 003': PRICE_TABLE_A,
-    'Mission 004': PRICE_TABLE_B, 'Mission 005': PRICE_TABLE_A, 'Mission 006': PRICE_TABLE_B
+    'Mission 004': PRICE_TABLE_B, 'Mission 005': PRICE_TABLE_A, 'Mission 006': PRICE_TABLE_A
   };
   var CN1_EXTRA_HOUR = [70000, 90000];
 
@@ -182,25 +182,6 @@
   var CN2_EXTRA_HOUR = [90000, 90000];
 
   function formatVND(n){ return Math.round(n / 1000) + 'k'; }
-
-  // Holiday surcharge windows — every day in range charges 120% of the
-  // room's normal weekend (T6–CN) rate, regardless of what weekday it
-  // actually falls on (29/8–2/9 2026 spans Sat through Wed). While "today"
-  // (real device date, not the search date) falls in a window, the room
-  // cards' static price table is replaced with a plain notice instead —
-  // see roomPriceTableHtml — since the printed T2–T5/T6–CN/T7 numbers
-  // wouldn't be accurate for a customer browsing right now.
-  var HOLIDAY_PROMOS = [
-    { start: new Date(2026, 7, 29), end: new Date(2026, 8, 2), multiplier: 1.2, label: 'dịp lễ 2/9' }
-  ];
-  function holidayPromoFor(date){
-    for (var i = 0; i < HOLIDAY_PROMOS.length; i++) {
-      var promo = HOLIDAY_PROMOS[i];
-      if (date >= promo.start && date <= promo.end) return promo;
-    }
-    return null;
-  }
-
   // Pricing table's own weekend column is "THỨ 6 – CN" (Fri–Sun); Mon–Thu is the weekday column.
   function isWeekendRate(date){ var d = date.getDay(); return d === 0 || d === 5 || d === 6; }
   function isSaturday(date){ return date.getDay() === 6; }
@@ -209,13 +190,6 @@
     return branchKey === 'cn1' ? (CN1_ROOM_PRICE[room] || PRICE_TABLE_A) : (CN2_ROOM_PRICE[room] || CN2_PRICE_MISSION);
   }
   function extraHourRate(branchKey){ return branchKey === 'cn1' ? CN1_EXTRA_HOUR : CN2_EXTRA_HOUR; }
-
-  // Shown in place of roomPriceTableHtml's output whenever the customer's
-  // searched date(s) touch a holiday surcharge window — see the
-  // .room-card__price-slot swap in the availSearchBtn handler.
-  function roomPriceNoticeHtml(promo){
-    return '<p class="room-card__price-notice">Giá đã thay đổi do ảnh hưởng của ' + promo.label + '.</p>';
-  }
 
   function roomPriceTableHtml(branchKey, room){
     var p = priceFor(branchKey, room);
@@ -261,25 +235,20 @@
   function computeBookingPrice(branchKey, room, mode, reqDate, checkoutDate, reqStartMin, reqEndMin){
     var p = priceFor(branchKey, room);
     var extra = extraHourRate(branchKey);
-    var holidayPromo = holidayPromoFor(reqDate);
     if (mode === 'hour') {
       var wk = isWeekendRate(reqDate) ? 1 : 0;
       var hours = parseInt(availDuration.value, 10) || 3;
-      var comboBase = holidayPromo ? Math.round(p.combo[1] * holidayPromo.multiplier) : p.combo[wk];
-      var total = comboBase + Math.max(0, hours - 3) * extra[wk];
-      var noteH = hours > 3 ? ('Combo 3h + ' + (hours - 3) + ' giờ thêm') : 'Combo 3h';
-      if (holidayPromo) noteH += ' (đã gồm phụ thu ' + holidayPromo.label + ')';
-      return { total: total, note: noteH };
+      var total = p.combo[wk] + Math.max(0, hours - 3) * extra[wk];
+      return { total: total, note: hours > 3 ? ('Combo 3h + ' + (hours - 3) + ' giờ thêm') : 'Combo 3h' };
     }
     if (mode === 'overnight') {
-      var base = holidayPromo ? Math.round(p.overnight.normal * holidayPromo.multiplier) : overnightRate(p, reqDate);
+      var base = overnightRate(p, reqDate);
       var surcharge = 0;
       if (reqStartMin != null && reqEndMin != null) {
         var included = includedOvernightCheckoutMin(reqStartMin);
         surcharge = overtimeSurcharge(reqEndMin - included, overtimeRates(branchKey, reqDate));
       }
-      var note = 'Qua đêm' + (isSaturday(reqDate) && !holidayPromo ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu lệch giờ' : '');
-      if (holidayPromo) note += ' (đã gồm phụ thu ' + holidayPromo.label + ')';
+      var note = 'Qua đêm' + (isSaturday(reqDate) ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu lệch giờ' : '');
       return { total: base + surcharge, note: note };
     }
     // mode === 'day' — standard window for the whole stay is check-in 11:00
@@ -290,12 +259,9 @@
     if (!p.fullday) return null; // rooms with no full-day package — direct contact instead
     var nights = Math.max(1, Math.round((checkoutDate - reqDate) / 86400000));
     var total2 = 0;
-    var anyNightHasPromo = false;
     for (var i = 0; i < nights; i++) {
       var d = addDays(reqDate, i);
-      var nightPromo = holidayPromoFor(d);
-      if (nightPromo) { anyNightHasPromo = true; total2 += Math.round(p.fullday[1] * nightPromo.multiplier); }
-      else { total2 += p.fullday[isWeekendRate(d) ? 1 : 0]; }
+      total2 += p.fullday[isWeekendRate(d) ? 1 : 0];
     }
     var surcharge2 = 0;
     if (reqStartMin != null && reqEndMin != null) {
@@ -303,7 +269,7 @@
       var includedTotalMin = nights * 24 * 60 - 11 * 60 + 9 * 60;
       surcharge2 = overtimeSurcharge(actualTotalMin - includedTotalMin, overtimeRates(branchKey, reqDate));
     }
-    var note2 = nights + ' ngày (Nguyên ngày)' + (surcharge2 > 0 ? ' + phụ thu lệch giờ' : '') + (anyNightHasPromo ? ' (đã gồm phụ thu dịp lễ 2/9)' : '');
+    var note2 = nights + ' ngày (Nguyên ngày)' + (surcharge2 > 0 ? ' + phụ thu lệch giờ' : '');
     return { total: total2 + surcharge2, note: note2 };
   }
 
@@ -360,7 +326,7 @@
         '</div>' +
         '<div class="room-card__body">' +
           '<h3>' + name + '</h3>' +
-          '<div class="room-card__price-slot">' + roomPriceTableHtml(branchKey, name) + '</div>' +
+          roomPriceTableHtml(branchKey, name) +
           '<div class="room-card__body-cols">' +
             '<div class="room-card__amenities-col">' + amenitiesOrFallbackHtml(branchKey, name) + '</div>' +
             '<div class="room-card__status-col">' +
@@ -895,24 +861,6 @@
       lastCheckin = { date: reqDate, min: dayTimeInMin };
       lastCheckout = { date: checkoutDate, min: dayTimeOutMin };
     }
-
-    // Does the searched stay touch a holiday surcharge window? Mirrors how
-    // computeBookingPrice checks it — a single reqDate check for hour/
-    // overnight, a per-night scan for day mode — so the static price
-    // table swap below always agrees with the price computed further down.
-    var searchPromo = null;
-    if (availMode === 'day' && checkoutDate) {
-      var promoNights = Math.max(1, Math.round((checkoutDate - reqDate) / 86400000));
-      for (var pn = 0; pn < promoNights && !searchPromo; pn++) {
-        searchPromo = holidayPromoFor(addDays(reqDate, pn));
-      }
-    } else {
-      searchPromo = holidayPromoFor(reqDate);
-    }
-    roomGrid.querySelectorAll('.room-card__price-slot').forEach(function(slot){
-      var roomName = slot.closest('.room-card').dataset.room;
-      slot.innerHTML = searchPromo ? roomPriceNoticeHtml(searchPromo) : roomPriceTableHtml(currentBranchKey, roomName);
-    });
 
     resetAvailability();
     availStatus.textContent = 'Đang kiểm tra...';

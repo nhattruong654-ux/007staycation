@@ -420,11 +420,6 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
 .room-card__price-table td:first-child{ text-align:left; color:var(--fg-muted); font-weight:400; padding-left:0; }
 .room-card__price-table td:first-child strong{ display:block; color:var(--fg); font-weight:700; }
 .room-card__price-time{ display:block; font-family:var(--font-mono); font-size:0.6rem; color:var(--fg-dim); margin-top:2px; }
-.room-card__price-notice{
-  font-size:0.78rem; line-height:1.5; color:var(--accent-strong); margin:0 0 var(--space-3);
-  background:var(--bg-elevated); border:1px dashed var(--line-strong);
-  border-radius:var(--radius); padding:10px 12px; text-align:center;
-}
 .room-card__computed-price{
   font-size:0.9rem; font-weight:700; color:var(--accent-strong); text-align:center;
   background:var(--bg-elevated); border:1px solid var(--line-strong);
