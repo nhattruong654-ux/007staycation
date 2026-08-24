@@ -1005,6 +1005,10 @@
   var bkRoomCode = document.getElementById('bkRoomCode');
   var bkCheckin = document.getElementById('bkCheckin');
   var bkCheckout = document.getElementById('bkCheckout');
+  var bkBasePriceRow = document.getElementById('bkBasePriceRow');
+  var bkBasePrice = document.getElementById('bkBasePrice');
+  var bkHolidayRow = document.getElementById('bkHolidayRow');
+  var bkHoliday = document.getElementById('bkHoliday');
   var bkTotal = document.getElementById('bkTotal');
   var bkCopyBtn = document.getElementById('bkCopyBtn');
   var bkZaloBtn = document.getElementById('bkZaloBtn');
@@ -1034,21 +1038,27 @@
     var priced = computeBookingPrice(currentBranchKey, room, availMode, lastCheckin.date, lastCheckout.date, lastCheckin.min, modalReqEndMin);
     var totalDisplay = priced ? formatVND(priced.total) : 'Liên hệ trực tiếp';
     var lateNote = (priced && priced.note && priced.note.indexOf('phụ thu') !== -1) ? ' (đã gồm phụ thu trả phòng trễ)' : '';
-    // When the stay touches a holiday surcharge window, break the total down
-    // on the slip: room price + holiday surcharge = total, e.g. "300k + phụ
-    // thu dịp lễ 2/9 (20%): 60k = 360k" — instead of just the final number.
-    var holidayLine = (priced && priced.holidaySurcharge > 0)
-      ? formatVND(priced.basePrice) + ' + phụ thu ' + priced.holidayLabel + ' (' + priced.holidayPercent + '%): ' + formatVND(priced.holidaySurcharge) + ' = ' + totalDisplay
-      : null;
-    bkTotal.textContent = (holidayLine || totalDisplay) + lateNote;
+    // When the stay touches a holiday surcharge window, show room price and
+    // holiday surcharge as their own rows on the slip, separate from the
+    // final total — instead of one combined line.
+    var hasHoliday = priced && priced.holidaySurcharge > 0;
+    bkBasePriceRow.hidden = !hasHoliday;
+    bkHolidayRow.hidden = !hasHoliday;
+    var holidaySurchargeDisplay = null;
+    if (hasHoliday) {
+      bkBasePrice.textContent = formatVND(priced.basePrice);
+      holidaySurchargeDisplay = formatVND(priced.holidaySurcharge) + ' (' + priced.holidayLabel + ', +' + priced.holidayPercent + '%)';
+      bkHoliday.textContent = holidaySurchargeDisplay;
+    }
+    bkTotal.textContent = totalDisplay + lateNote;
     currentBookingText =
       branchName.toUpperCase() + ' xin xác nhận thông tin booking' + '\n' +
       'Mã Phòng: ' + codeDisplay + '\n' +
       'Ngày và giờ checkin: ' + checkinDisplay + '\n' +
       'Ngày và giờ checkout: ' + checkoutDisplay + '\n' +
-      (holidayLine
-        ? 'Tiền phòng: ' + formatVND(priced.basePrice) + '\n' +
-          'Phụ thu ' + priced.holidayLabel + ' (' + priced.holidayPercent + '%): ' + formatVND(priced.holidaySurcharge) + '\n' +
+      (hasHoliday
+        ? 'Giá phòng: ' + formatVND(priced.basePrice) + '\n' +
+          'Phụ thu lễ: ' + holidaySurchargeDisplay + '\n' +
           'Thành tiền: ' + totalDisplay + lateNote
         : 'Thành tiền: ' + totalDisplay + lateNote);
     bkCopiedNote.hidden = true;
