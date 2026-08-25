@@ -192,13 +192,13 @@
     {
       start: new Date(2026, 7, 29), end: new Date(2026, 8, 2), multiplier: 1.2, label: 'dịp lễ 2/9',
       // 1/9 và 2/9 use the Thứ 7 tier as the base for every mode (combo,
-      // qua đêm, nguyên ngày); 29–31/8 use the normal weekend tier. Combo
-      // and Nguyên ngày only store one "weekend" number that already
-      // doubles as their Thứ 7 price (see PRICE_TABLE_A/B, CN2_PRICE_*),
-      // so only "Qua đêm" — which has a genuinely higher Thứ 7 rate —
-      // actually changes value; the other two modes are numerically
-      // unaffected but still conceptually use the Thứ 7 tier here.
-      saturdayRateFrom: new Date(2026, 8, 1), saturdayRateTo: new Date(2026, 8, 2)
+      // qua đêm, nguyên ngày) 30/8–2/9; only 29/8 uses the normal weekend
+      // tier. Combo and Nguyên ngày only store one "weekend" number that
+      // already doubles as their Thứ 7 price (see PRICE_TABLE_A/B,
+      // CN2_PRICE_*), so only "Qua đêm" — which has a genuinely higher
+      // Thứ 7 rate — actually changes value; the other two modes are
+      // numerically unaffected but still conceptually use the Thứ 7 tier.
+      saturdayRateFrom: new Date(2026, 7, 30), saturdayRateTo: new Date(2026, 8, 2)
     }
   ];
   function holidayPromoFor(date){
