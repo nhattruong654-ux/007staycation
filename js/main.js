@@ -189,7 +189,14 @@
   // total) is summarized on the booking request slip — see
   // openBookingModal — not shown on the static per-room price table.
   var HOLIDAY_PROMOS = [
-    { start: new Date(2026, 7, 29), end: new Date(2026, 8, 2), multiplier: 1.2, label: 'dịp lễ 2/9' }
+    {
+      start: new Date(2026, 7, 29), end: new Date(2026, 8, 2), multiplier: 1.2, label: 'dịp lễ 2/9',
+      // 1/9 và 2/9 — the actual Quốc khánh days — use Thứ 7's (higher)
+      // overnight rate as the base instead of the normal weekend rate;
+      // 29–31/8 keep the normal weekend rate as base. Combo/Nguyên ngày
+      // are unaffected since their T6–CN and T7 columns are already equal.
+      saturdayRateFrom: new Date(2026, 8, 1), saturdayRateTo: new Date(2026, 8, 2)
+    }
   ];
   function holidayPromoFor(date){
     for (var i = 0; i < HOLIDAY_PROMOS.length; i++) {
@@ -197,6 +204,9 @@
       if (date >= promo.start && date <= promo.end) return promo;
     }
     return null;
+  }
+  function promoUsesSaturdayRate(promo, date){
+    return !!(promo && promo.saturdayRateFrom && date >= promo.saturdayRateFrom && date <= promo.saturdayRateTo);
   }
 
   // Pricing table's own weekend column is "THỨ 6 – CN" (Fri–Sun); Mon–Thu is the weekday column.
@@ -274,14 +284,16 @@
       };
     }
     if (mode === 'overnight') {
-      var baseON = holidayPromo ? p.overnight.normal : overnightRate(p, reqDate);
-      var overnightTotal = holidayPromo ? Math.round(p.overnight.normal * holidayPromo.multiplier) : overnightRate(p, reqDate);
+      var useSatRate = promoUsesSaturdayRate(holidayPromo, reqDate);
+      var overnightBaseRate = useSatRate ? p.overnight.saturday : p.overnight.normal;
+      var baseON = holidayPromo ? overnightBaseRate : overnightRate(p, reqDate);
+      var overnightTotal = holidayPromo ? Math.round(overnightBaseRate * holidayPromo.multiplier) : overnightRate(p, reqDate);
       var surcharge = 0;
       if (reqStartMin != null && reqEndMin != null) {
         var included = includedOvernightCheckoutMin(reqStartMin);
         surcharge = overtimeSurcharge(reqEndMin - included, overtimeRates(branchKey, reqDate));
       }
-      var note = 'Qua đêm' + (isSaturday(reqDate) && !holidayPromo ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu lệch giờ' : '');
+      var note = 'Qua đêm' + ((useSatRate || (isSaturday(reqDate) && !holidayPromo)) ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu lệch giờ' : '');
       return {
         total: overnightTotal + surcharge, note: note,
         basePrice: baseON, holidaySurcharge: overnightTotal - baseON,
