@@ -184,22 +184,13 @@
   function formatVND(n){ return Math.round(n / 1000) + 'k'; }
 
   // Holiday surcharge windows — every day in range charges 120% of the
-  // room's normal weekend (T6–CN) rate, regardless of what weekday it
-  // actually falls on. The breakdown (room price + holiday surcharge =
-  // total) is summarized on the booking request slip — see
+  // room's Thứ 7 (Saturday) tier rate, regardless of what weekday it
+  // actually falls on — 29/8 is itself a real Saturday, and 30/8–2/9 use
+  // the same tier per request. The breakdown (room price + holiday
+  // surcharge = total) is summarized on the booking request slip — see
   // openBookingModal — not shown on the static per-room price table.
   var HOLIDAY_PROMOS = [
-    {
-      start: new Date(2026, 7, 29), end: new Date(2026, 8, 2), multiplier: 1.2, label: 'dịp lễ 2/9',
-      // 1/9 và 2/9 use the Thứ 7 tier as the base for every mode (combo,
-      // qua đêm, nguyên ngày) 30/8–2/9; only 29/8 uses the normal weekend
-      // tier. Combo and Nguyên ngày only store one "weekend" number that
-      // already doubles as their Thứ 7 price (see PRICE_TABLE_A/B,
-      // CN2_PRICE_*), so only "Qua đêm" — which has a genuinely higher
-      // Thứ 7 rate — actually changes value; the other two modes are
-      // numerically unaffected but still conceptually use the Thứ 7 tier.
-      saturdayRateFrom: new Date(2026, 7, 30), saturdayRateTo: new Date(2026, 8, 2)
-    }
+    { start: new Date(2026, 7, 29), end: new Date(2026, 8, 2), multiplier: 1.2, label: 'dịp lễ 2/9' }
   ];
   function holidayPromoFor(date){
     for (var i = 0; i < HOLIDAY_PROMOS.length; i++) {
@@ -207,9 +198,6 @@
       if (date >= promo.start && date <= promo.end) return promo;
     }
     return null;
-  }
-  function promoUsesSaturdayRate(promo, date){
-    return !!(promo && promo.saturdayRateFrom && date >= promo.saturdayRateFrom && date <= promo.saturdayRateTo);
   }
 
   // Pricing table's own weekend column is "THỨ 6 – CN" (Fri–Sun); Mon–Thu is the weekday column.
@@ -287,16 +275,14 @@
       };
     }
     if (mode === 'overnight') {
-      var useSatRate = promoUsesSaturdayRate(holidayPromo, reqDate);
-      var overnightBaseRate = useSatRate ? p.overnight.saturday : p.overnight.normal;
-      var baseON = holidayPromo ? overnightBaseRate : overnightRate(p, reqDate);
-      var overnightTotal = holidayPromo ? Math.round(overnightBaseRate * holidayPromo.multiplier) : overnightRate(p, reqDate);
+      var baseON = holidayPromo ? p.overnight.saturday : overnightRate(p, reqDate);
+      var overnightTotal = holidayPromo ? Math.round(p.overnight.saturday * holidayPromo.multiplier) : overnightRate(p, reqDate);
       var surcharge = 0;
       if (reqStartMin != null && reqEndMin != null) {
         var included = includedOvernightCheckoutMin(reqStartMin);
         surcharge = overtimeSurcharge(reqEndMin - included, overtimeRates(branchKey, reqDate));
       }
-      var note = 'Qua đêm' + ((useSatRate || (isSaturday(reqDate) && !holidayPromo)) ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu lệch giờ' : '');
+      var note = 'Qua đêm' + ((holidayPromo || isSaturday(reqDate)) ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu lệch giờ' : '');
       return {
         total: overnightTotal + surcharge, note: note,
         basePrice: baseON, holidaySurcharge: overnightTotal - baseON,
