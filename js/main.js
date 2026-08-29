@@ -51,6 +51,18 @@
     }, 2600 + mediaIndex * 300);
   });
 
+  /* ---------- Holiday notice banner crossfade ---------- */
+  document.querySelectorAll('.notice__slides').forEach(function(media){
+    var noticeSlides = media.querySelectorAll('.notice__slide');
+    if (noticeSlides.length < 2) return;
+    var noticeCurrent = 0;
+    setInterval(function(){
+      noticeSlides[noticeCurrent].classList.remove('is-active');
+      noticeCurrent = (noticeCurrent + 1) % noticeSlides.length;
+      noticeSlides[noticeCurrent].classList.add('is-active');
+    }, 3200);
+  });
+
   /* ---------- Hero text reveal on load ---------- */
   window.addEventListener('DOMContentLoaded', function(){
     var lines = document.querySelectorAll('.hero .reveal-line');

@@ -209,7 +209,9 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
   background:linear-gradient(135deg, #d9b45c, var(--accent) 50%, #d9b45c);
   box-shadow:0 0 0 1px rgba(217,180,92,0.35), 0 24px 60px -24px rgba(224,27,46,0.6);
 }
-.notice__img{ display:block; width:100%; border-radius:calc(var(--radius) * 4); }
+.notice__slides{ position:relative; width:100%; aspect-ratio:1/1; border-radius:calc(var(--radius) * 4); overflow:hidden; }
+.notice__slide{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1.2s ease; }
+.notice__slide.is-active{ opacity:1; }
 
 /* ============================================================
    Missions / Rooms
