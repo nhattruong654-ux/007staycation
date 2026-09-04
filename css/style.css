@@ -210,8 +210,38 @@ p{ margin:0 0 var(--space-3); color:var(--fg-muted); max-width:60ch; }
   box-shadow:0 0 0 1px rgba(217,180,92,0.35), 0 24px 60px -24px rgba(224,27,46,0.6);
 }
 .notice__slides{ position:relative; width:100%; aspect-ratio:1/1; border-radius:calc(var(--radius) * 4); overflow:hidden; }
-.notice__slide{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1.2s ease; }
-.notice__slide.is-active{ opacity:1; }
+.notice__slide{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; pointer-events:none; transition:opacity 1.2s ease; }
+.notice__slide.is-active{ opacity:1; pointer-events:auto; }
+.notice__slide--link{ display:block; }
+.notice__slide--link img{ display:block; width:100%; height:100%; object-fit:cover; }
+.notice__cta{
+  position:absolute; left:50%; bottom:38px; transform:translateX(-50%);
+  display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  padding:9px 20px; border-radius:999px;
+  background:linear-gradient(135deg, #d9b45c, var(--accent) 55%, #d9b45c);
+  border:1px solid rgba(255,255,255,0.35);
+  color:#fff; font-family:var(--font-mono); font-size:0.72rem; font-weight:700;
+  letter-spacing:0.05em; text-transform:uppercase;
+  box-shadow:0 10px 24px -8px rgba(224,27,46,0.75);
+  transition:transform .2s var(--ease), box-shadow .2s ease;
+}
+.notice__slide--link:hover .notice__cta, .notice__slide--link:focus-visible .notice__cta{
+  transform:translateX(-50%) translateY(-2px);
+  box-shadow:0 14px 28px -8px rgba(224,27,46,0.9);
+}
+.notice__arrow{
+  position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+  width:34px; height:34px; border-radius:50%; border:1px solid var(--line-strong);
+  background:rgba(0,0,0,0.65); color:var(--fg); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:border-color .2s, background .2s;
+}
+.notice__arrow svg{ width:16px; height:16px; }
+.notice__arrow:hover{ border-color:var(--accent); background:rgba(0,0,0,0.9); color:var(--accent); }
+.notice__arrow--prev{ left:16px; }
+.notice__arrow--next{ right:16px; }
+.notice__dots{ position:absolute; left:0; right:0; bottom:14px; z-index:2; display:flex; justify-content:center; gap:6px; }
+.notice__dot{ width:6px; height:6px; border-radius:50%; background:rgba(245,241,232,0.5); transition:background .2s, transform .2s; cursor:pointer; }
+.notice__dot.is-active{ background:var(--accent); transform:scale(1.25); }
 
 /* ============================================================
    Missions / Rooms

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/style.css?v=14">
 </head>
 <body>
 
@@ -73,8 +73,21 @@
     <p class="tag reveal-up">// THÔNG BÁO - SỰ KIỆN</p>
     <div class="notice__frame reveal-up">
       <div class="notice__slides">
-        <img class="notice__slide is-active" src="assets/images/holiday-notice-29-8-v2.jpg" alt="Thông báo điều chỉnh giá dịp lễ 2/9: tăng 20% so với giá cuối tuần, áp dụng từ Thứ Bảy 29.08.2026 đến hết Thứ Tư 02.09.2026" loading="lazy">
-        <img class="notice__slide" src="assets/images/holiday-notice-mascots.webp" alt="007 Staycation — hai điệp viên 007" loading="lazy">
+        <a class="notice__slide notice__slide--link is-active" href="https://007-single-night.vercel.app" target="_blank" rel="noopener" aria-label="Đăng ký sự kiện 007 Single Night">
+          <img src="assets/images/single-night-event-poster.webp" alt="007 Single Night — sự kiện kết nối độc thân, Thứ 7 19/09/2026, 18:00–22:00 tại VCM Coffee & Bakery, giới hạn 30 khách mời" loading="lazy">
+          <span class="notice__cta">Xem thêm <span aria-hidden="true">→</span></span>
+        </a>
+        <img class="notice__slide" src="assets/images/holiday-notice-29-8-v2.jpg" alt="Thông báo điều chỉnh giá dịp lễ 2/9: tăng 20% so với giá cuối tuần, áp dụng từ Thứ Bảy 29.08.2026 đến hết Thứ Tư 02.09.2026" loading="lazy">
+      </div>
+      <button class="notice__arrow notice__arrow--prev" aria-label="Ảnh trước">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="notice__arrow notice__arrow--next" aria-label="Ảnh sau">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="notice__dots">
+        <span class="notice__dot is-active"></span>
+        <span class="notice__dot"></span>
       </div>
     </div>
   </div>
@@ -524,6 +537,6 @@
   </div>
 </div>
 
-<script src="js/main.js?v=31"></script>
+<script src="js/main.js?v=32"></script>
 </body>
 </html>

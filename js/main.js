@@ -51,16 +51,32 @@
     }, 2600 + mediaIndex * 300);
   });
 
-  /* ---------- Holiday notice banner crossfade ---------- */
-  document.querySelectorAll('.notice__slides').forEach(function(media){
-    var noticeSlides = media.querySelectorAll('.notice__slide');
+  /* ---------- Holiday notice banner crossfade + manual controls ---------- */
+  document.querySelectorAll('.notice__frame').forEach(function(frame){
+    var noticeSlides = frame.querySelectorAll('.notice__slide');
+    var noticeDots = frame.querySelectorAll('.notice__dot');
     if (noticeSlides.length < 2) return;
     var noticeCurrent = 0;
-    setInterval(function(){
+    var noticeTimer;
+    function showNoticeSlide(index){
       noticeSlides[noticeCurrent].classList.remove('is-active');
-      noticeCurrent = (noticeCurrent + 1) % noticeSlides.length;
+      noticeDots[noticeCurrent].classList.remove('is-active');
+      noticeCurrent = ((index % noticeSlides.length) + noticeSlides.length) % noticeSlides.length;
       noticeSlides[noticeCurrent].classList.add('is-active');
-    }, 3200);
+      noticeDots[noticeCurrent].classList.add('is-active');
+    }
+    function restartNoticeTimer(){
+      clearInterval(noticeTimer);
+      noticeTimer = setInterval(function(){ showNoticeSlide(noticeCurrent + 1); }, 3200);
+    }
+    var prevBtn = frame.querySelector('.notice__arrow--prev');
+    var nextBtn = frame.querySelector('.notice__arrow--next');
+    if (prevBtn) prevBtn.addEventListener('click', function(){ showNoticeSlide(noticeCurrent - 1); restartNoticeTimer(); });
+    if (nextBtn) nextBtn.addEventListener('click', function(){ showNoticeSlide(noticeCurrent + 1); restartNoticeTimer(); });
+    noticeDots.forEach(function(dot, i){
+      dot.addEventListener('click', function(){ showNoticeSlide(i); restartNoticeTimer(); });
+    });
+    restartNoticeTimer();
   });
 
   /* ---------- Hero text reveal on load ---------- */
