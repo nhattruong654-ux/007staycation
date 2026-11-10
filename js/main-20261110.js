@@ -250,7 +250,7 @@
     var p = priceFor(branchKey, room);
     var rows = [
       ['Combo 3h', '10:00 – 22:00', [p.combo[0], p.combo[1], p.combo[1]]],
-      ['Qua đêm', 'Tối đa 12 tiếng · Trả trước 10:00', [p.overnight.normal, p.overnight.normal, p.overnight.saturday]]
+      ['Qua đêm', branchKey === 'cn2' ? '21:30 - 9:30' : 'Tối đa 12 tiếng · Trả trước 10:00', [p.overnight.normal, p.overnight.normal, p.overnight.saturday]]
     ];
     if (branchKey === 'cn1' && CN1_COMBO_2H[room]) rows.unshift(['Combo 2h', '10:00 – 22:00', CN1_COMBO_2H[room]]);
     if (branchKey === 'cn2') rows.unshift(['Combo 2h', '10:00 – 22:00', (room === '007 DNA' || room === '007 SOUL') ? [230000,280000,280000] : [180000,230000,230000]]);
