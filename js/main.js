@@ -194,7 +194,7 @@
   // Both branches split rooms into two tiers by size.
   var PRICE_TABLE_A = { combo:[250000,280000], overnight:{normal:340000, saturday:400000}, fullday:[650000,750000] };
   var PRICE_TABLE_B = { combo:[200000,230000], overnight:{normal:300000, saturday:350000}, fullday:[600000,700000] };
-  var PRICE_TABLE_CN1_006 = { combo:PRICE_TABLE_A.combo, overnight:PRICE_TABLE_B.overnight, fullday:PRICE_TABLE_A.fullday };
+  var PRICE_TABLE_CN1_006 = { combo:PRICE_TABLE_B.combo, overnight:PRICE_TABLE_B.overnight, fullday:PRICE_TABLE_B.fullday };
   var CN1_ROOM_PRICE = {
     'Mission 001': PRICE_TABLE_A, 'Mission 002': PRICE_TABLE_B, 'Mission 003': PRICE_TABLE_A,
     'Mission 004': PRICE_TABLE_B, 'Mission 005': PRICE_TABLE_A, 'Mission 006': PRICE_TABLE_CN1_006
@@ -250,7 +250,7 @@
     var p = priceFor(branchKey, room);
     var rows = [
       ['Combo 3h', '10:00 – 22:00', [p.combo[0], p.combo[1], p.combo[1]]],
-      ['Qua đêm', branchKey === 'cn2' ? '21:30 - 9:30' : 'Tối đa 12 tiếng · Trả trước 10:00', [p.overnight.normal, p.overnight.normal, p.overnight.saturday]]
+      ['Qua đêm', '21:30 - 9:30', [p.overnight.normal, p.overnight.normal, p.overnight.saturday]]
     ];
     if (branchKey === 'cn1' && CN1_COMBO_2H[room]) rows.unshift(['Combo 2h', '10:00 – 22:00', CN1_COMBO_2H[room]]);
     if (branchKey === 'cn2') rows.unshift(['Combo 2h', '10:00 – 22:00', (room === '007 DNA' || room === '007 SOUL') ? [230000,280000,280000] : [180000,230000,230000]]);
