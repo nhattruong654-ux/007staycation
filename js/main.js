@@ -102,12 +102,12 @@
   /* ---------- Room data + 2-step branch → rooms flow ---------- */
   var ROOMS = {
     cn1: {
-      name: '007 Staycation',
+      name: '007 STAYCATION',
       address: '40 Trần Quốc Toản, Phường Long Hương',
       rooms: ['Mission 001','Mission 002','Mission 003','Mission 004','Mission 005','Mission 006']
     },
     cn2: {
-      name: '007 The Concept',
+      name: '007 THE CONCEPT',
       address: '51 Nguyễn Thị Minh Khai, Phường Bà Rịa',
       rooms: ['Mission 001','Mission 002','Mission 003','Mission 004','Mission 005','Mission 006','007 DNA','007 SOUL']
     }
@@ -192,16 +192,25 @@
   // 2-tier split as always. Overnight is the exception: it only steps up on
   // Saturday nights — Mon–Fri and Sun all share the same "normal" rate.
   // Both branches split rooms into two tiers by size.
-  var PRICE_TABLE_A = { combo:[250000,280000], overnight:{normal:400000, saturday:450000}, fullday:[650000,750000] };
-  var PRICE_TABLE_B = { combo:[200000,230000], overnight:{normal:350000, saturday:400000}, fullday:[600000,700000] };
+  var PRICE_TABLE_A = { combo:[250000,280000], overnight:{normal:340000, saturday:400000}, fullday:[650000,750000] };
+  var PRICE_TABLE_B = { combo:[200000,230000], overnight:{normal:300000, saturday:350000}, fullday:[600000,700000] };
+  var PRICE_TABLE_CN1_006 = { combo:PRICE_TABLE_A.combo, overnight:PRICE_TABLE_B.overnight, fullday:PRICE_TABLE_A.fullday };
   var CN1_ROOM_PRICE = {
     'Mission 001': PRICE_TABLE_A, 'Mission 002': PRICE_TABLE_B, 'Mission 003': PRICE_TABLE_A,
-    'Mission 004': PRICE_TABLE_B, 'Mission 005': PRICE_TABLE_A, 'Mission 006': PRICE_TABLE_A
+    'Mission 004': PRICE_TABLE_B, 'Mission 005': PRICE_TABLE_A, 'Mission 006': PRICE_TABLE_CN1_006
+  };
+  var CN1_COMBO_2H = {
+    'Mission 001': [180000,230000,230000],
+    'Mission 002': [160000,190000,190000],
+    'Mission 003': [180000,230000,230000],
+    'Mission 004': [160000,190000,190000],
+    'Mission 005': [180000,230000,230000],
+    'Mission 006': [160000,190000,190000]
   };
   var CN1_EXTRA_HOUR = [70000, 90000];
 
-  var CN2_PRICE_MISSION = { combo:[250000,280000], overnight:{normal:400000, saturday:500000}, fullday:[750000,800000] };
-  var CN2_PRICE_SPECIAL = { combo:[300000,350000], overnight:{normal:500000, saturday:600000}, fullday:[850000,950000] };
+  var CN2_PRICE_MISSION = { combo:[250000,280000], overnight:{normal:340000, saturday:400000}, fullday:[750000,800000] };
+  var CN2_PRICE_SPECIAL = { combo:[300000,350000], overnight:{normal:400000, saturday:500000}, fullday:[850000,950000] };
   var CN2_ROOM_PRICE = {
     '007 DNA': CN2_PRICE_SPECIAL, '007 SOUL': CN2_PRICE_SPECIAL,
     'Mission 001': CN2_PRICE_MISSION, 'Mission 002': CN2_PRICE_MISSION, 'Mission 003': CN2_PRICE_MISSION,
@@ -240,9 +249,11 @@
   function roomPriceTableHtml(branchKey, room){
     var p = priceFor(branchKey, room);
     var rows = [
-      ['Combo 3h', '10:00 – 21:00', [p.combo[0], p.combo[1], p.combo[1]]],
-      ['Qua đêm', '21:30 – 09:30', [p.overnight.normal, p.overnight.normal, p.overnight.saturday]]
+      ['Combo 3h', '10:00 – 22:00', [p.combo[0], p.combo[1], p.combo[1]]],
+      ['Qua đêm', 'Tối đa 12 tiếng · Trả trước 10:00', [p.overnight.normal, p.overnight.normal, p.overnight.saturday]]
     ];
+    if (branchKey === 'cn1' && CN1_COMBO_2H[room]) rows.unshift(['Combo 2h', '10:00 – 22:00', CN1_COMBO_2H[room]]);
+    if (branchKey === 'cn2') rows.unshift(['Combo 2h', '10:00 – 22:00', (room === '007 DNA' || room === '007 SOUL') ? [230000,280000,280000] : [180000,230000,230000]]);
     if (p.fullday) rows.push(['Nguyên ngày', '11:00 – 09:00', [p.fullday[0], p.fullday[1], p.fullday[1]]]);
     var body = rows.map(function(r){
       return '<tr><td><strong>' + r[0] + '</strong><span class="room-card__price-time">' + r[1] + '</span></td>' +
@@ -252,14 +263,9 @@
       '<tbody>' + body + '</tbody></table>';
   }
 
-  // The checkout minute (relative to check-in day's midnight, so always
-  // >1440 since it's next-morning) included in the base "Qua đêm" price for
-  // a given check-in time: any check-in up to 23:00 (early or on-schedule)
-  // is guaranteed exactly a full 12h; check-ins after 23:00 are capped at
-  // 11:00 checkout instead (not a full 12h).
+  // Overnight includes at most 12 hours, capped at 10:00 the next morning.
   function includedOvernightCheckoutMin(checkinMin){
-    if (checkinMin <= 23 * 60) return checkinMin + 12 * 60;
-    return 1440 + 11 * 60;
+    return Math.min(checkinMin + 12 * 60, 1440 + 10 * 60);
   }
 
   // Late-checkout / early-checkin surcharge rate: CN1 gets a cheaper rate on
@@ -292,11 +298,16 @@
     if (mode === 'hour') {
       var wk = isWeekendRate(reqDate) ? 1 : 0;
       var hours = parseInt(availDuration.value, 10) || 3;
-      var basePrice = holidayPromo ? p.combo[1] : p.combo[wk];
-      var comboTotal = holidayPromo ? Math.round(p.combo[1] * holidayPromo.multiplier) : p.combo[wk];
+      var comboRates = p.combo;
+      if (hours === 2) {
+        comboRates = branchKey === 'cn1' ? CN1_COMBO_2H[room] :
+          ((room === '007 DNA' || room === '007 SOUL') ? [230000,280000,280000] : [180000,230000,230000]);
+      }
+      var basePrice = holidayPromo ? comboRates[1] : comboRates[wk];
+      var comboTotal = holidayPromo ? Math.round(comboRates[1] * holidayPromo.multiplier) : comboRates[wk];
       var total = comboTotal + Math.max(0, hours - 3) * extra[wk];
       return {
-        total: total, note: hours > 3 ? ('Combo 3h + ' + (hours - 3) + ' giờ thêm') : 'Combo 3h',
+        total: total, note: hours > 3 ? ('Combo 3h + ' + (hours - 3) + ' giờ thêm') : (hours === 2 ? 'Combo 2h' : 'Combo 3h'),
         basePrice: basePrice, holidaySurcharge: comboTotal - basePrice,
         holidayLabel: holidayPromo ? holidayPromo.label : null,
         holidayPercent: holidayPromo ? Math.round((holidayPromo.multiplier - 1) * 100) : null
@@ -308,9 +319,9 @@
       var surcharge = 0;
       if (reqStartMin != null && reqEndMin != null) {
         var included = includedOvernightCheckoutMin(reqStartMin);
-        surcharge = overtimeSurcharge(reqEndMin - included, overtimeRates(branchKey, reqDate));
+        surcharge = overtimeSurcharge(Math.max(0, reqEndMin - included), overtimeRates(branchKey, reqDate));
       }
-      var note = 'Qua đêm' + ((holidayPromo || isSaturday(reqDate)) ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu lệch giờ' : '');
+      var note = 'Qua đêm' + ((holidayPromo || isSaturday(reqDate)) ? ' (Thứ 7)' : '') + (surcharge > 0 ? ' + phụ thu thêm giờ' : '');
       return {
         total: overnightTotal + surcharge, note: note,
         basePrice: baseON, holidaySurcharge: overnightTotal - baseON,
@@ -343,7 +354,7 @@
       var includedTotalMin = nights * 24 * 60 - 11 * 60 + 9 * 60;
       surcharge2 = overtimeSurcharge(actualTotalMin - includedTotalMin, overtimeRates(branchKey, reqDate));
     }
-    var note2 = nights + ' ngày (Nguyên ngày)' + (surcharge2 > 0 ? ' + phụ thu lệch giờ' : '');
+    var note2 = nights + ' ngày (Nguyên ngày)' + (surcharge2 > 0 ? ' + phụ thu thêm giờ' : '');
     return {
       total: basePrice2 + holidaySurcharge2 + surcharge2, note: note2,
       basePrice: basePrice2, holidaySurcharge: holidaySurcharge2,
@@ -649,11 +660,11 @@
   // nights book up fast enough that a nearest-slot offer that late isn't
   // useful, but combo is bookable any time on other days, so suggestions
   // are offered any time too, including past 22:00.
-  function suggestNearestSlot(rows, branchCode, room, reqDate, requestedStartMin, requestedDurationMin, conflictSpan){
+  function suggestNearestSlot(rows, branchCode, room, reqDate, requestedStartMin, requestedDurationMin, conflictSpan, allowLateCombo){
     var CLEAN_BUFFER = 30, MIN_GAP = 210, MAX_DISTANCE = 120;
     var suggestedStart = conflictSpan.end;
     if (suggestedStart - requestedStartMin > MAX_DISTANCE) return null;
-    if (isSaturday(reqDate) && ((suggestedStart % 1440) + 1440) % 1440 >= 21 * 60) return null;
+    if (!allowLateCombo && suggestedStart + requestedDurationMin > 22 * 60) return null;
     var nextStart = Infinity;
     var blocked = false;
     rows.forEach(function(row){
@@ -854,8 +865,8 @@
   });
   refreshAvailTimeOptions();
 
-  // "Số giờ nghỉ" runs 3–12 giờ.
-  for (var durH = 3; durH <= 12; durH++) {
+  // "Số giờ nghỉ" runs 2–12 giờ.
+  for (var durH = 2; durH <= 12; durH++) {
     var durOpt = document.createElement('option');
     durOpt.value = String(durH);
     durOpt.textContent = durH + ' giờ';
@@ -878,7 +889,7 @@
       availFieldCLabel.textContent = 'Số giờ nghỉ';
     } else if (mode === 'overnight') {
       availFieldBLabel.textContent = 'Giờ vào (tối)';
-      availFieldCLabel.textContent = 'Giờ ra (sáng hôm sau)';
+      availFieldCLabel.textContent = 'Giờ ra ( sáng hôm sau )';
     } else {
       availFieldBLabel.textContent = 'Giờ nhận phòng';
       availFieldCLabel.textContent = 'Giờ trả phòng';
@@ -905,19 +916,6 @@
       var t = parseVNTime(availTime.value);
       if (!t) { availStatus.textContent = 'Vui lòng chọn giờ vào.'; return; }
       reqStartMin = t.h * 60 + t.m;
-      // Combo (theo giờ) is bookable any time of day except Saturday night
-      // from 19:00 onward — Saturday's overnight demand means combo isn't
-      // offered that late, point the guest at "Qua đêm" instead.
-      if (isSaturday(reqDate) && reqStartMin >= 19 * 60) {
-        resetAvailability();
-        var qdMsg = 'Chỉ còn qua đêm — vui lòng chuyển sang chế độ "Qua đêm".';
-        availStatus.textContent = qdMsg;
-        roomGrid.querySelectorAll('.room-card__suggestion').forEach(function(el){
-          el.innerHTML = qdMsg;
-          el.hidden = false;
-        });
-        return;
-      }
       reqEndMin = reqStartMin + parseInt(availDuration.value, 10) * 60;
       lastCheckin = { date: reqDate, min: reqStartMin };
       lastCheckout = { date: addDays(reqDate, Math.floor(reqEndMin / 1440)), min: reqEndMin % 1440 };
@@ -945,6 +943,21 @@
     availStatus.textContent = 'Đang kiểm tra...';
 
     loadAvailability().then(function(rows){
+      var overnightFreeCount = 0;
+      Object.keys(ROOMS).forEach(function(key){
+        ROOMS[key].rooms.forEach(function(room){
+          if (!findConflict(rows, BRANCH_CODE[key], room, reqDate, 21 * 60 + 30, 1440 + 10 * 60)) overnightFreeCount++;
+        });
+      });
+      var excludedLateComboDay = reqDate.getDay() === 5 || reqDate.getDay() === 6;
+      var allowLateCombo = !excludedLateComboDay && overnightFreeCount >= 6;
+      if (availMode === 'hour' && reqEndMin > 22 * 60 && !allowLateCombo) {
+        availStatus.textContent = excludedLateComboDay
+          ? 'Thứ 6 và thứ 7: combo giờ cần trả phòng chậm nhất 22:00.'
+          : 'Tổng số phòng qua đêm còn trống của hai chi nhánh dưới 6 phòng. Combo giờ cần trả phòng chậm nhất 22:00.';
+        return;
+      }
+
       var data = ROOMS[currentBranchKey];
       var branchCode = BRANCH_CODE[currentBranchKey];
       data.rooms.forEach(function(room){
@@ -986,7 +999,17 @@
           var priced = computeBookingPrice(currentBranchKey, room, availMode, reqDate, checkoutDate,
             availMode === 'day' ? dayTimeInMin : reqStartMin, availMode === 'day' ? dayTimeOutMin : reqEndMin);
           if (priced) {
-            priceEl.innerHTML = formatVND(priced.total);
+            var oldTotal = priced.total;
+            if (availMode === 'overnight') {
+              var oldNight = currentBranchKey === 'cn1'
+                ? ((room === 'Mission 002' || room === 'Mission 004') ? {normal:350000,saturday:400000} : {normal:400000,saturday:450000})
+                : ((room === '007 DNA' || room === '007 SOUL') ? {normal:500000,saturday:600000} : {normal:400000,saturday:500000});
+              var currentNight = priceFor(currentBranchKey, room).overnight;
+              var promo = holidayPromoFor(reqDate);
+              var rateKey = (promo || isSaturday(reqDate)) ? 'saturday' : 'normal';
+              oldTotal += promo ? Math.round(oldNight[rateKey] * promo.multiplier) - Math.round(currentNight[rateKey] * promo.multiplier) : oldNight[rateKey] - currentNight[rateKey];
+            }
+            priceEl.innerHTML = (oldTotal > priced.total ? '<del class="room-card__old-price" aria-label="Giá cũ">' + formatVND(oldTotal) + '</del>' : '') + '<span>' + formatVND(priced.total) + '</span>';
             priceEl.hidden = false;
           } else {
             priceEl.innerHTML = 'Liên hệ trực tiếp để báo giá';
@@ -1005,8 +1028,8 @@
             // offering the next slot after it clears.
             var suggestion = conflict.start >= reqEndMin
               ? suggestEarlierSlot(rows, branchCode, room, reqDate, reqStartMin, reqEndMin - reqStartMin)
-              : suggestNearestSlot(rows, branchCode, room, reqDate, reqStartMin, reqEndMin - reqStartMin, conflict);
-            if (suggestion) {
+              : suggestNearestSlot(rows, branchCode, room, reqDate, reqStartMin, reqEndMin - reqStartMin, conflict, allowLateCombo);
+            if (suggestion && (allowLateCombo || suggestion.end <= 22 * 60)) {
               suggestionEl.innerHTML = 'Bạn có thể book phòng này từ <strong>' + minutesToClock(suggestion.start) +
                 '</strong> đến <strong>' + minutesToClock(suggestion.end) + '</strong>';
               suggestionEl.hidden = false;
@@ -1164,4 +1187,22 @@
   }
   document.querySelectorAll('.rules-carousel').forEach(initRulesCarousel);
 
+})();
+
+(function(){
+  var carousel=document.querySelector('.notice-carousel');
+  if(!carousel)return;
+  var track=carousel.querySelector('.notice__board'),dots=carousel.querySelectorAll('.notice-dots button'),index=0,timer,startX=0;
+  function show(n){index=(n+dots.length)%dots.length;track.style.transform='translateX(-'+index*100+'%)';dots.forEach(function(dot,i){dot.setAttribute('aria-pressed',String(i===index));});}
+  function restart(){clearInterval(timer);timer=setInterval(function(){if(!document.hidden)show(index+1);},3000);}
+  dots.forEach(function(dot,i){dot.addEventListener('click',function(){show(i);restart();});});
+  carousel.querySelector('.notice-prev').addEventListener('click',function(){show(index-1);restart();});
+  carousel.querySelector('.notice-next').addEventListener('click',function(){show(index+1);restart();});
+  carousel.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;},{passive:true});
+  carousel.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>40){show(index+(dx<0?1:-1));restart();}},{passive:true});
+  carousel.addEventListener('mouseenter',function(){clearInterval(timer);});
+  carousel.addEventListener('mouseleave',restart);
+  carousel.addEventListener('focusin',function(){clearInterval(timer);});
+  carousel.addEventListener('focusout',restart);
+  restart();
 })();
